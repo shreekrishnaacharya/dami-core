@@ -1,0 +1,13 @@
+import { ActiveRecords } from "damijs";
+class {{@modelName}} extends ActiveRecords {
+    constructor() {
+        super("{{@table_name}}");
+        this.init()
+    }
+    rules = () => {
+        return {{@rules}};
+    }
+    {{@hasOne}}
+    {{@hasMany}}
+}
+export default {{@modelName}};

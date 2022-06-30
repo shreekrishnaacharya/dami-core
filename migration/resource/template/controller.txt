@@ -1,0 +1,133 @@
+import { NextFunction, Request, Response } from "damijs";
+import { Controller, DataProvider, HttpCode, Methods } from "damijs";
+import {{@modelName}} from "{{@modelPath}}";
+
+class {{@controllerName}} extends Controller<{{@modelName}}> {
+    constructor() {
+        super({{@modelName}});
+    }
+
+    requiredLogin = () => {
+        return ["create", "update", "delete", "view"];
+    };
+
+    /*
+          @Index action
+          this action list the data
+    */
+    index = async (req: Request, res: Response, next: NextFunction) => {
+        const model = this.getModel();
+        const dataProvider = new DataProvider({ request: req, response: res });
+        try {
+            dataProvider.setModel(model);
+            const result = await dataProvider.getList();
+            res.send(result.toJson());
+        } catch (err) {
+            res.status(HttpCode.INTERNAL_SERVER_ERROR).send({});
+        }
+        next();
+    };
+
+    /*
+          @Create action
+          this action create the data
+    */
+    create = async (req: Request, res: Response, next: NextFunction) => {
+        const model = this.getModel();
+        try {
+            if (model.load(req.body)) {
+                if (await model.save()) {
+                    //return HttpCode.ACCEPTED on success
+                    res.status(HttpCode.ACCEPTED).send(model.toJson());
+                } else {
+                    //return unprocessable status
+                    res.status(HttpCode.UNPROCESSABLE_ENTITY).send({});
+                }
+            } else {
+                res.status(HttpCode.BAD_REQUEST).send({});
+            }
+        } catch (err) {
+            res.status(HttpCode.INTERNAL_SERVER_ERROR).send({});
+        }
+        next();
+    };
+
+    /*
+      @View action
+      this action view the data
+    */
+
+    view = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            //if empty it will return null else it will return a model with data
+            const model = await this.getModel().findOne(req.params.id);
+            if (model == null) {
+                res.status(HttpCode.NOT_FOUND).end();
+            } else {
+                res.send(model.toJson());
+            }
+        } catch (err) {
+            res.sendStatus(HttpCode.INTERNAL_SERVER_ERROR);
+        }
+        next();
+    };
+
+    /*
+          @Update action
+          this action update the data
+    */
+
+    update = async (req: Request, res: Response, next: NextFunction) => {
+        const model = this.getModel();
+        try {
+            if (model.load(req.body)) {
+                if (await model.update(req.params.id)) {
+                    //return 204 on success
+                    res.status(HttpCode.ACCEPTED).send({}); 
+                } else {
+                    //return not found status
+                    res.status(HttpCode.NOT_FOUND).send({}); 
+                }
+            } else {
+                res.status(HttpCode.BAD_REQUEST).send({});
+            }
+        } catch (err) {
+            res.status(HttpCode.INTERNAL_SERVER_ERROR).send({});
+        }
+        next();
+    }
+    /*
+          @Delete action
+          this action deletes the data
+    */
+
+    delete = async (req: Request, res: Response, next: NextFunction) => {
+        const model = this.getModel();
+        try {
+            if (await model.delete(req.params.id)) { 
+                //delete operation
+                res.status(HttpCode.ACCEPTED).send({});
+            } else {
+                res.status(HttpCode.NOT_FOUND).send({});
+            }
+        } catch (err) {
+            res.status(HttpCode.INTERNAL_SERVER_ERROR).send({});
+        }
+        next();
+    }
+    /*
+          @Route function
+          this function holds the defination for routes for actions in controllers
+    */
+    route = () => {
+        return [
+            { method: Methods.GET, path: "/", action: "index" },
+            { method: Methods.POST, path: "/", action: "create" },
+            { method: Methods.GET, path: "/:id", action: "view" },
+            { method: Methods.PUT, path: "/:id", action: "update" },
+            { method: Methods.DELETE, path: "/:id", action: "delete" },
+        ];
+    }
+}
+
+export default {{@controllerName}};

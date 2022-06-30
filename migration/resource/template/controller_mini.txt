@@ -1,0 +1,11 @@
+import { NextFunction, Request, Response } from "damijs";
+import { Controller, DataProvider, HttpCode, Methods } from "damijs";
+import {{@modelName}} from "{{@modelPath}}";
+
+class {{@controllerName}} extends Controller<{{@modelName}}> {
+    constructor() {
+        super({{@modelName}});
+    }
+}
+
+export default {{@controllerName}};

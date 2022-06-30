@@ -1,0 +1,134 @@
+import appConfig from '../config/app';
+import DamiCache from '../helpers/DamiCache';
+import MiddleWare from './MiddleWare';
+import * as _path from 'path';
+import CType from "../config/ConfigTypes"
+
+
+class Dami {
+  static config: object;
+  static port: number;
+  static db: object;
+  static baseUrl: string;
+  static loginUser: IUserConfig;
+  static enableRbac: boolean;
+  private static store: DamiCache;
+  private static _dirname: string;
+  static authTokens: DamiCache;
+
+  static init(configSetting: object) {
+    const config = {
+      ...appConfig,
+      ...configSetting,
+    };
+    for (const conf of Object.keys(config)) {
+      this[conf] = config[conf];
+    }
+    Dami.config = config;
+    if (config[CType.BASE_PATH].length === 0) {
+      throw new Error('basePath config not setup!');
+    }
+    this.authTokens = new DamiCache({ ttl: this.loginUser.refreshInactive });
+    this.store = new DamiCache();
+    this._dirname = _path.resolve(_path.dirname('')) + '/' + config[CType.BASE_PATH] + '/';
+  }
+  static requiredLogin = (): boolean | [] => {
+    return true;
+  };
+  static beforeAction = (): (MiddleWare)[] => {
+    return [];
+  };
+  static afterAction = (): (MiddleWare)[] => {
+    return [];
+  };
+  static rbac = (userModel, route): boolean => {
+    return this.enableRbac ? false : true;
+  };
+  static set(key: string, value: any) {
+    this.store.set(key, value);
+  }
+  static has(key: string) {
+    return this.store.has(key);
+  }
+  static get(key: string) {
+    return this.store.get(key);
+  }
+  static getCurrentPath() {
+    return _path.resolve();
+  }
+
+  static getPath(path?: string, name?: string) {
+    if (path === undefined) {
+      return this._dirname;
+    }
+    const dirnam = path;
+    let letpath = '';
+    if (path.charAt(0) === '@') {
+      const sppath = path.split('/');
+      if (sppath.length > 1) {
+        sppath.shift();
+        letpath = sppath.join('/');
+      }
+    }
+
+    if (dirnam in Dami.config[CType.PATH]) {
+      return this._dirname + Dami.config[CType.PATH][dirnam] + letpath + (name === undefined ? '' : name);
+    }
+    throw new Error(`Path '${path}' not set`);
+  }
+  static setAuth(token: string) {
+    const { uid, sessionid, exp } = this.parseJwt(token);
+    if (this.loginUser.uniqueSession) {
+      this.authTokens.set(uid, token, { expireOn: exp });
+    } else {
+      this.authTokens.set(sessionid, token, { expireOn: exp });
+    }
+  }
+
+  static hasAuth(value: string) {
+    const { uid, sessionid } = this.parseJwt(value);
+    if (this.loginUser.uniqueSession) {
+      if (this.authTokens.has(uid)) {
+        this.authTokens.config(uid, { ttl: this.loginUser.refreshInactive });
+        return true;
+      }
+    } else {
+      if (this.authTokens.has(sessionid)) {
+        this.authTokens.config(sessionid, { ttl: this.loginUser.refreshInactive });
+        return true;
+      }
+    }
+    return false;
+  }
+
+  static deleteAuth(value: string) {
+    const { uid, sessionid } = this.parseJwt(value);
+
+    if (this.loginUser.uniqueSession) {
+      return this.authTokens.del(uid);
+    } else {
+      return this.authTokens.del(sessionid);
+    }
+  }
+
+  static parseJwt(token: string) {
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map((c) => {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+          })
+          .join(''),
+      );
+      return JSON.parse(jsonPayload);
+    } catch (e) {
+      //  console.log(e);
+      return {};
+    }
+  }
+}
+
+export default Dami;

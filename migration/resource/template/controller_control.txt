@@ -1,0 +1,23 @@
+import { NextFunction, Request, Response } from "damijs";
+import { Controller } from "damijs";
+
+class {{@controllerName}} extends Controller<any> {
+    constructor() {
+        super("");
+    }
+
+    beforeAction = () => {
+        return [];
+    };
+
+    requiredLogin = () => {
+        return false;
+    };
+
+    index = async (req: Request, res: Response, next: NextFunction) => {
+        res.send("Hello World");
+        return next();
+    }
+}
+
+export default {{@controllerName}};

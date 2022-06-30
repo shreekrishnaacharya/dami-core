@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/static/css/main.3b097173.css",
+    "main.js": "/static/js/main.7284968f.js",
+    "static/media/working_girl_coffee.png": "/static/media/working_girl_coffee.380dba0fc2e9ca5322c8.png",
+    "static/media/dami_logo.png": "/static/media/dami_logo.48199b4d8a660699b9c4.png",
+    "index.html": "/index.html"
+  },
+  "entrypoints": [
+    "static/css/main.3b097173.css",
+    "static/js/main.7284968f.js"
+  ]
+}
