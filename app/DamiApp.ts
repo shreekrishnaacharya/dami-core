@@ -2,13 +2,13 @@ import LogTrack from '../log/LogTrack';
 import { Connection } from '../models/Connection';
 import Mysql from '../db/mysql';
 import Methods from '../controllers/Methods';
-import * as cors from 'cors';
+import cors from 'cors';
 import Dami from './Dami';
 import { initRbac } from '../helpers/rbac';
 import * as FileUpload from 'express-fileupload';
 import MigrateList from '../migration/controllers/index';
 import * as _fs from 'fs';
-import * as express from 'express';
+import express from 'express';
 import HttpCode from '../helpers/HttpCode';
 import Cattr from "../config/ConfigTypes"
 
