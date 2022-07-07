@@ -14,7 +14,6 @@ abstract class ActiveRecords extends ActiveQuery {
       const _val = this._validate;
       const visi = this.visibility();
       const _attrValue = this.getAttributes(true);
-      // console.log(visi)
       let visible = [];
       if (this.scenario in visi) {
         visible = visi[this.scenario];

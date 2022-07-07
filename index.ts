@@ -20,6 +20,7 @@ import Url from './helpers/Url';
 import Service from './service/Service';
 import { isEmpty } from './helpers/functions';
 import { Query } from './models/Connection';
+import MiddleWare from './app/MiddleWare';
 export {
   NextFunction,
   Request,
@@ -28,6 +29,7 @@ export {
   isEmpty,
   Service,
   Url,
+  MiddleWare,
   Authorization,
   Rid,
   FileHelper,

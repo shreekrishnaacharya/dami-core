@@ -153,10 +153,10 @@ abstract class BaseModel implements IActiveModel {
     throw new Error('Method not implemented.');
   }
 
-  protected beforeSave(type: string) { return true }
+  protected beforeSave(type: string): Boolean { return true }
   protected afterSave(type: string) { }
-  protected beforeDelete() { return true }
-  protected afterDelete() { return true }
+  protected beforeDelete(): Boolean { return true }
+  protected afterDelete() { }
   protected getModal(callBack: (e: IActiveModel) => any) {
     return callBack(this);
   }
