@@ -5,9 +5,9 @@ import Methods from '../controllers/Methods';
 import cors from 'cors';
 import Dami from './Dami';
 import { initRbac } from '../helpers/rbac';
-import * as FileUpload from 'express-fileupload';
+import FileUpload from 'express-fileupload';
 import MigrateList from '../migration/controllers/index';
-import * as _fs from 'fs';
+import _fs from 'fs';
 import express from 'express';
 import HttpCode from '../helpers/HttpCode';
 import Cattr from "../config/ConfigTypes"

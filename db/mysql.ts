@@ -5,7 +5,7 @@ class Mysql {
     this.con = mysql.createPool(dbConfig);
   }
 
-  query = (sql: string, callback?: (error: Error, []) => void) => {
+  query = (sql: string, callback?: (error: Error, result: Array<any>) => void) => {
     return new Promise((resolve, reject) => {
       this.con.getConnection((err1: Error, connection) => {
         if (err1) throw err1;

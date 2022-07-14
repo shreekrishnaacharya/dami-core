@@ -3,7 +3,7 @@ import DamiCache from '../helpers/DamiCache';
 import MiddleWare from './MiddleWare';
 import * as _path from 'path';
 import CType from "../config/ConfigTypes"
-
+import { IUserConfig } from "../config/IConfig"
 
 class Dami {
   static config: object;

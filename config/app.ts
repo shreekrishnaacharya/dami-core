@@ -1,5 +1,6 @@
 import IMiddleWare from '../app/IMiddleWare';
 import GuestUser from '../auth/GuestUser';
+import { IDatabase } from './IConfig';
 
 
 const appConfig = {

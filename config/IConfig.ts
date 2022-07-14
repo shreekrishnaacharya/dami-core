@@ -1,11 +1,12 @@
-interface IDatabase {
+export interface IDatabase {
     connectionLimit?: number,
     host: string,
     user: string,
     password: string,
     database: string
 }
-interface IUserConfig {
+
+export interface IUserConfig {
     authUser: any;
     uniqueSession: boolean;
     authToken: string;
