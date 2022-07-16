@@ -1,13 +1,19 @@
 import * as _path from 'path';
 import * as fs from 'fs';
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const ContentType = {
   file: 'image/png',
   css: 'text/css',
   js: 'text/html',
 };
+// const __dirname = fs.realpathSync('.');
 class ReadFile {
   static index() {
+    console.log(__dirname, fs.existsSync(__dirname + '/../resource/client/index.html'));
     return fs.readFileSync(__dirname + '/../resource/client/index.html', 'utf8');
   }
   static readPath(type: string, name: string): string {
