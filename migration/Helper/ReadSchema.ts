@@ -3,6 +3,9 @@ import { Connection } from '../../models/Connection';
 import * as fs from 'fs';
 import * as util from 'util';
 import * as _path from 'path';
+import { fileURLToPath } from 'url';
+const __dirname = _path.dirname(fileURLToPath(import.meta.url));
+
 const NumericType = [
   'tinyint',
   'bool',
@@ -40,6 +43,8 @@ interface ShowColumn {
   Default: string;
   Key: string;
 }
+
+
 
 class ReadSchema {
   tableName: string = '';
@@ -137,6 +142,7 @@ class ReadSchema {
         return commandString;
       })
       .catch((e) => {
+        console.log(e);
         commandString += e.message;
       })
       .finally(() => {

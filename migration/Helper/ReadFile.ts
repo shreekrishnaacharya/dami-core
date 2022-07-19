@@ -1,9 +1,8 @@
 import * as _path from 'path';
 import * as fs from 'fs';
-import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const __dirname = _path.dirname(fileURLToPath(import.meta.url));
 
 const ContentType = {
   file: 'image/png',

@@ -1,7 +1,9 @@
 import * as fs from 'fs';
 import * as _path from 'path';
 import { PathFrom } from '../../helpers/PathMatch';
+import { fileURLToPath } from 'url';
 
+const __dirname = _path.dirname(fileURLToPath(import.meta.url));
 class ReadCrud {
   tableName: string = '';
   errors: string[] = [];

@@ -99,8 +99,6 @@ abstract class ActiveRecords extends ActiveQuery {
     }
     return fieldList;
   }
-
-
 }
 
 export default ActiveRecords;
