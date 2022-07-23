@@ -49,15 +49,14 @@ class Authorization extends MiddleWare implements IMiddleWare {
     const jwtJson = Dami.parseJwt(bearerHeader);
     // find user by token
     /* tslint:disable:no-string-literal */
-    const model = userModel.findByAuthKey(jwtJson['authkey']);
-
+    const model = await userModel.findByAuthKey(jwtJson['authkey']);
     if (model === null) {
       // if user not found
       return res.status(HttpCode.UNAUTHORIZED).send('Login required :1004').end();
     }
     // set auth-token
     // res.headers["auth-token"] = bearerToken;
-    req.user = userModel;
+    req.user = model;
     req.authToken = bearerHeader;
     req.authJson = jwtJson;
     if (this.controller.runRbac(userModel, req.originalUrl)) {

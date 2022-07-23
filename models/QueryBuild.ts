@@ -210,7 +210,7 @@ class QueryBuild {
       } else if (where.substring(0, 2) === 'OR') {
         where = where.slice(2, where.length);
       }
-      return 'WHERE ' + where;
+      return ' WHERE ' + where;
     }
     return '';
   };

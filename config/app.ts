@@ -29,7 +29,7 @@ const appConfig = {
   rbac: (userModel, path): boolean => {
     return true;
   },
-  db: {} as IDatabase,
+  dbConfig: {} as IDatabase,
   enableRbac: false,
   controllers: null,
   services: [],

@@ -99,7 +99,7 @@ class ActiveQuery extends Connection {
       }
     }
     this.beforeDelete();
-    const dq = `DELETE FROM ${this.tableName} WHERE id=?`;
+    const dq = `DELETE FROM ${this.tableName} WHERE ${this.tableName}.id=?`;
     return this.pPromise(this.createCommand(mysql.format(dq, [searchid])).rawDelete());
   }
 
@@ -122,7 +122,7 @@ class ActiveQuery extends Connection {
       values.push(this.getValue(ky));
     }
     values.push(searchid);
-    uq = uq.slice(0, -1) + ' WHERE id=?';
+    uq = uq.slice(0, -1) + ` WHERE ${this.tableName}.id=? `;
     this.beforeSave(Query.UPDATE);
     return this.pPromise(this.createCommand(mysql.format(uq, values)).rawUpdate());
   }
@@ -134,7 +134,7 @@ class ActiveQuery extends Connection {
       .select(this.getSelectAs())
       .from(this.tableName)
       .doLeftJoin(this.joinOne)
-      .where({ id })
+      .where(` ${this.tableName}.id=${id} `)
       .build();
     this.createCommand(bq);
     return this.pPromise(this.query());

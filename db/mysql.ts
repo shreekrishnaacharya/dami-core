@@ -22,6 +22,7 @@ class Mysql {
   };
 
   execute = (sql, callback?) => {
+    console.log(sql, 'query')
     return new Promise((resolve, reject) => {
       this.con.getConnection((err1: Error, connection) => {
         if (err1) throw err1;
