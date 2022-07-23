@@ -21,17 +21,21 @@ class Mysql {
     });
   };
 
-  execute = (sql, callback) => {
+  execute = (sql, callback?) => {
     return new Promise((resolve, reject) => {
       this.con.getConnection((err1: Error, connection) => {
         if (err1) throw err1;
         connection.query(sql, (err: Error, result) => {
           connection.release(); // return the connection to pool
           if (err) {
-            callback(err, {});
+            if (callback !== undefined) {
+              callback(err, {});
+            }
             reject(err);
           } else {
-            callback(err, result);
+            if (callback !== undefined) {
+              callback(err, Object.values(JSON.parse(JSON.stringify(result))));
+            }
             resolve(result);
           }
         });
@@ -39,17 +43,21 @@ class Mysql {
     });
   };
 
-  insert = (sql, records, callback) => {
+  insert = (sql, records, callback?) => {
     return new Promise((resolve, reject) => {
       this.con.getConnection((err1: Error, connection) => {
         if (err1) throw err1;
         connection.query(sql, records, (err: Error, result) => {
           connection.release(); // return the connection to pool
           if (err) {
-            callback(err, {});
+            if (callback !== undefined) {
+              callback(err, {});
+            }
             reject(err);
           } else {
-            callback(err, result);
+            if (callback !== undefined) {
+              callback(err, Object.values(JSON.parse(JSON.stringify(result))));
+            }
             resolve(result);
           }
         });

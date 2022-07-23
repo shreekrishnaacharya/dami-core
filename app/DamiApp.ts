@@ -21,8 +21,9 @@ class DamiApp {
     //     throw new Error('Controllers not set in config file')
     // }
     this.controllers = configSetting[Cattr.CONTROLLER];
-    if (Dami.db) {
-      Connection.mysql = new Mysql(Dami.db);
+    if (Dami.dbConfig) {
+      Connection.mysql = new Mysql(Dami.dbConfig);
+      Dami.db = Connection.mysql;
       if (Dami.enableRbac) {
         initRbac();
       }
@@ -98,7 +99,7 @@ class DamiApp {
       }
     }
     app.use(`/${Cattr.APP_NAME}`, (req, res, next) => {
-      if (Object.keys(Dami.db).length === 0) {
+      if (Object.keys(Dami.dbConfig).length === 0) {
         res.status(HttpCode.BAD_GATEWAY).send('Db not configured').end();
       } else {
         next();

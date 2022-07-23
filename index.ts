@@ -19,9 +19,10 @@ import FileHelper from './helpers/FileHelper';
 import Url from './helpers/Url';
 import Service from './service/Service';
 import { isEmpty } from './helpers/functions';
-import { Query } from './models/Connection';
+import { Query, Connection } from './models/Connection';
 import MiddleWare from './app/MiddleWare';
 export {
+  Connection,
   NextFunction,
   Request,
   Response,

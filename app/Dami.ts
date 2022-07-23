@@ -4,11 +4,13 @@ import MiddleWare from './MiddleWare';
 import * as _path from 'path';
 import CType from "../config/ConfigTypes"
 import { IUserConfig } from "../config/IConfig"
+import Mysql from '../db/mysql';
 
 class Dami {
   static config: object;
   static port: number;
-  static db: object;
+  static dbConfig: object;
+  static db: Mysql = null;
   static baseUrl: string;
   static loginUser: IUserConfig;
   static enableRbac: boolean;
