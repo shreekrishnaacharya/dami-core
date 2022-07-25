@@ -2,7 +2,6 @@ import { NextFunction, Request, Response } from 'express';
 import Controller from '../../controllers/Controller';
 import Methods from '../../controllers/Methods';
 import HttpCode from '../../helpers/HttpCode';
-import { Connection } from '../../models/Connection';
 import ReadCrud from '../Helper/ReadCrud';
 import TestSpecialChar from '../Helper/SpecialCharacter';
 

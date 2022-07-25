@@ -119,7 +119,9 @@ class ActiveQuery extends Connection {
     const _attributes = this.getAttributes();
     for (const ky of Object.keys(_attributes)) {
       uq += ky + '=?,';
-      values.push(this.getValue(ky));
+      if (this.getValue(ky) !== this.getOldValue(ky)) {
+        values.push(this.getValue(ky));
+      }
     }
     values.push(searchid);
     uq = uq.slice(0, -1) + ` WHERE ${this.tableName}.id=? `;

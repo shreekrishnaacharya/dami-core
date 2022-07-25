@@ -1,5 +1,8 @@
 import * as fs from 'fs';
 import * as _path from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = _path.dirname(fileURLToPath(import.meta.url));
 
 class ReadControl {
   errors: string[] = [];

@@ -95,8 +95,8 @@ export default class DataProvider {
     });
   }
 
-  query(callback: (query: QueryBuild) => void) {
-    callback(this.queryModel);
+  query(callback: (query: QueryBuild) => QueryBuild) {
+    this.queryModel = callback(this.queryModel);
     return this;
   }
 
