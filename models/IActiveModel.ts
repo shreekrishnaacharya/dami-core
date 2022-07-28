@@ -37,6 +37,7 @@ export default interface IActiveModel {
   load(attributes: object): boolean;
   isLoaded(): boolean;
   getAttributes(): object;
+  getOldAttributes(): object;
   getValue(key: string): number | string;
   setValue(key: string, value: string | number): void;
   getOldValue(key: string): number | string;

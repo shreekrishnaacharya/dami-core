@@ -1,3 +1,4 @@
+import { isEmpty } from '../helpers/functions';
 import ActiveQuery from './ActiveQuery';
 import { IAttList } from './IRules';
 import { checkRules } from './_validate';
@@ -62,6 +63,9 @@ abstract class ActiveRecords extends ActiveQuery {
   }
 
   load(attributes: object) {
+    if (isEmpty(attributes)) {
+      return false;
+    }
     let isLoaded = false;
     const visible = this.visibility();
     let _attributeName = this.getAttName();

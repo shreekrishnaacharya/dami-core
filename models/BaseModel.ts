@@ -91,6 +91,10 @@ abstract class BaseModel implements IActiveModel {
     return this._attributes;
   }
 
+  getOldAttributes(): object {
+    return this._oldAttributes;
+  }
+
   /* tslint:disable:ban-types */
   onResult(callBack: Function): IActiveModel {
     throw new Error('Method not implemented.');
@@ -153,9 +157,9 @@ abstract class BaseModel implements IActiveModel {
     throw new Error('Method not implemented.');
   }
 
-  protected beforeSave(type: string): Boolean { return true }
+  protected async beforeSave(type: string): Promise<Boolean> { return Promise.resolve(true) }
   protected afterSave(type: string) { }
-  protected beforeDelete(): Boolean { return true }
+  protected async beforeDelete(): Promise<Boolean> { return Promise.resolve(true) }
   protected afterDelete() { }
   protected getModal(callBack: (e: IActiveModel) => any) {
     return callBack(this);
@@ -177,7 +181,7 @@ abstract class BaseModel implements IActiveModel {
           this.isEmpty = false;
         }
       });
-      this._oldAttributes = this._attributes;
+      this._oldAttributes = { ...this._attributes };
       return this;
     }
     const result = {};
@@ -250,7 +254,7 @@ abstract class BaseModel implements IActiveModel {
   }
 
   protected swapOldAtteribute() {
-    this._oldAttributes = this._attributes;
+    this._oldAttributes = { ...this._attributes };
   }
 
   getValue(key: string) {
@@ -265,11 +269,13 @@ abstract class BaseModel implements IActiveModel {
     if (attr.indexOf(key) < 0) {
       throw new Error(`Property not found : ${key}`);
     }
+    this[key] = value
     this._attributes[key] = value;
   }
   getOldValue(key: any) {
     if (this._attributeName.indexOf(key) < 0) {
-      throw new Error(`Property not found : ${key}`);
+      return null;
+      // throw new Error(`Property not found : ${key}`);
     }
     return this._oldAttributes[key];
   }

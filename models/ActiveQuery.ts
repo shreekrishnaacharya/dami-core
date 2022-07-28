@@ -98,7 +98,7 @@ class ActiveQuery extends Connection {
         searchid = this.primaryKey;
       }
     }
-    this.beforeDelete();
+    await this.beforeDelete();
     const dq = `DELETE FROM ${this.tableName} WHERE ${this.tableName}.id=?`;
     return this.pPromise(this.createCommand(mysql.format(dq, [searchid])).rawDelete());
   }
@@ -114,18 +114,22 @@ class ActiveQuery extends Connection {
     } else {
       this.primaryKey = parseInt(id.toString(), 10);
     }
+    await this.beforeSave(Query.UPDATE);
     let uq = `UPDATE ${this.tableName} SET `;
     const values = [];
-    const _attributes = this.getAttributes();
-    for (const ky of Object.keys(_attributes)) {
-      uq += ky + '=?,';
+    const _attributeName = this.getAttName(false)
+    for (const ky of _attributeName) {
       if (this.getValue(ky) !== this.getOldValue(ky)) {
+        uq += ky + '=?,';
         values.push(this.getValue(ky));
       }
     }
+    if (values.length == 0) {
+      console.log("empty");
+      return true;
+    }
     values.push(searchid);
     uq = uq.slice(0, -1) + ` WHERE ${this.tableName}.id=? `;
-    this.beforeSave(Query.UPDATE);
     return this.pPromise(this.createCommand(mysql.format(uq, values)).rawUpdate());
   }
 
@@ -205,10 +209,12 @@ class ActiveQuery extends Connection {
     this.joinOne.push([name, table, condition]);
     return this;
   }
+
   protected hasMany(table: any, condition: object, name: string) {
     this.joinMany.push([name, table, condition]);
     return this;
   }
+
   private async pPromise(promise: Promise<any>) {
     const result = await promise;
     return this.getAtt(result);
@@ -223,10 +229,10 @@ class ActiveQuery extends Connection {
         return false;
       }
       this.swapOldAtteribute();
-      this.load({ id: this.primaryKey, ...this.getAttributes() });
+      // this.load({ id: this.primaryKey, ...this.getAttributes() });
       this.isEmpty = false;
       this.isNew = false;
-      // this.afterSave(Query.UPDATE);
+      this.afterSave(Query.UPDATE);
       return true;
     } else if (this.queryType === Query.INSERT) {
       if (!result.hasOwnProperty('insertId')) {

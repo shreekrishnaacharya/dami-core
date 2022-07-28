@@ -35,6 +35,7 @@ abstract class Connection extends BaseModel {
 
   protected execute() {
     this.queryType = Query.EXECUTE;
+    // console.log(this.queryString)
     return Connection.mysql.execute(this.queryString, this.callback);
   }
 
@@ -44,6 +45,7 @@ abstract class Connection extends BaseModel {
   }
   protected rawUpdate() {
     this.queryType = Query.UPDATE;
+    // console.log(this.queryString)
     return Connection.mysql.execute(this.queryString, this.callback);
   }
   protected bulkInsert(records: any[]) {

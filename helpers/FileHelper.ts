@@ -26,7 +26,7 @@ class FileHelper {
   }
 
   static saveFile(file, path: string, name?: string) {
-    const tpath = path + '/thumb/' + name;
+    // const tpath = path + '/thumb/' + name;
     if (name === undefined) {
       const ext = _path.extname(file.name);
       name = Rid() + ext;
@@ -49,7 +49,7 @@ class FileHelper {
     const { size, t_size } = imageConfig;
     let { name } = imageConfig;
     const _pathAddress = Dami.getPath(path);
-    const tpath = _pathAddress + '/thumb/' + name;
+    // const tpath = _pathAddress + '/thumb/' + name;
     if (name === undefined) {
       const ext = _path.extname(image.name);
       name = Rid() + ext;
@@ -77,13 +77,11 @@ class FileHelper {
         let height = size;
         let width = size;
         if (ratio > 1) {
-          width = size;
-          height = Math.ceil(size / ratio);
+          width = null;
         } else {
-          height = size;
-          width = Math.ceil(size * ratio);
+          height = null;
         }
-        shar.resize({ width, height }).toFile(pname);
+        shar.resize(width, height).toFile(pname);
         return metadata;
       })
       .then((metadata) => {
@@ -94,13 +92,11 @@ class FileHelper {
         let height = t_size
         let width = t_size;
         if (ratio > 1) {
-          width = t_size;
-          height = Math.ceil(t_size / ratio);
+          width = null;
         } else {
-          height = t_size;
-          width = Math.ceil(t_size * ratio);
+          height = null;
         }
-        shar.resize({ width, height }).toFile(tname);
+        shar.resize(width, height).toFile(tname);
         return metadata;
       })
       .then(() => {
