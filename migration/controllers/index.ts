@@ -7,6 +7,6 @@ const ContorllerList = {
   model: new ModelController(),
   crud: new CrudController(),
   control: new ControlController(),
-  dami: new DamiController(),
+  // dami: new DamiController(),
 };
 export default ContorllerList;

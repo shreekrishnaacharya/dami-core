@@ -1,6 +1,6 @@
 import IMiddleWare from '../app/IMiddleWare';
 import GuestUser from '../auth/GuestUser';
-import { IDatabase } from './IConfig';
+import { IDatabase, IPubdirConfig } from './IConfig';
 
 
 const appConfig = {
@@ -14,6 +14,7 @@ const appConfig = {
     refreshExpire: '1y',
     refreshInactive: 0,
   },
+  publicDir: { path: 'public' } as IPubdirConfig,
   baseUrl: '',
   basePath: 'storage',
   path: {},

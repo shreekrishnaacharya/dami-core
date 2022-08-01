@@ -3,13 +3,14 @@ import DamiCache from '../helpers/DamiCache';
 import MiddleWare from './MiddleWare';
 import * as _path from 'path';
 import CType from "../config/ConfigTypes"
-import { IUserConfig } from "../config/IConfig"
+import { IDatabase, IPubdirConfig, IUserConfig } from "../config/IConfig"
 import Mysql from '../db/mysql';
 
 class Dami {
   static config: object;
   static port: number;
-  static dbConfig: object;
+  static publicDir: IPubdirConfig;
+  static dbConfig: IDatabase;
   static db: Mysql = null;
   static baseUrl: string;
   static loginUser: IUserConfig;

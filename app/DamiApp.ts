@@ -12,6 +12,11 @@ import express from 'express';
 import HttpCode from '../helpers/HttpCode';
 import Cattr from "../config/ConfigTypes"
 
+import * as _path from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = _path.dirname(fileURLToPath(import.meta.url));
+
 class DamiApp {
   static config: object;
   private controllers: object;
@@ -45,7 +50,6 @@ class DamiApp {
       _fs.mkdirSync(Dami.config[Cattr.BASE_PATH]);
     }
     app.use(cors(corsOptions));
-
     app.use(express.urlencoded({ extended: true }));
     app.use(express.json());
     app.use(
@@ -59,7 +63,8 @@ class DamiApp {
     app.use(this.configReq);
     app.use((req, res, next) => {
       count++;
-      console.log(Dami.authTokens);
+      // console.log(req.originalUrl)
+      // console.log(Dami.authTokens);
       next();
     });
     app.use(track.start);
@@ -133,6 +138,14 @@ class DamiApp {
         tmpControl = '';
       }
       app.use(`/${Cattr.APP_NAME + tmpControl}`, router);
+    }
+    app.use(`/${Cattr.APP_NAME}`, express.static(__dirname + "/../migration/resource/client"));
+    if (Object.values(Dami.publicDir).length > 0) {
+      if (Dami.publicDir.from != undefined) {
+        app.use(Dami.publicDir.from, express.static(Dami.publicDir.path));
+      } else {
+        app.use(express.static(Dami.publicDir.path));
+      }
     }
     app.use(track.memory);
     app.use(track.time);
