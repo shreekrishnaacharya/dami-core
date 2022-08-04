@@ -125,7 +125,6 @@ class ActiveQuery extends Connection {
       }
     }
     if (values.length == 0) {
-      console.log("empty");
       return true;
     }
     values.push(searchid);

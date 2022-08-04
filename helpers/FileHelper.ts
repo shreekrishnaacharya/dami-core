@@ -32,14 +32,12 @@ class FileHelper {
       name = Rid() + ext;
     }
     const _pathAddress = Dami.getPath(path);
+    // console.log(_pathAddress)
     const fname = Buffer.from(path + this.sap + name).toString('base64');
     if (!_fs.existsSync(_pathAddress)) {
       _fs.mkdirSync(_pathAddress);
     }
-    if (!_fs.existsSync(_pathAddress + 'thumb/')) {
-      _fs.mkdirSync(_pathAddress + 'thumb/');
-    }
-    return file.mv(name).then((e) => {
+    return file.mv(_pathAddress + name).then((e) => {
       if (e) return false;
       return fname;
     });
