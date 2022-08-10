@@ -6,7 +6,6 @@ import DamiController from './DamiController';
 const ContorllerList = {
   model: new ModelController(),
   crud: new CrudController(),
-  control: new ControlController(),
-  // dami: new DamiController(),
+  control: new ControlController()
 };
 export default ContorllerList;

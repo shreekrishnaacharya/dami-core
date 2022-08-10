@@ -14,6 +14,7 @@ import Cattr from "../config/ConfigTypes"
 
 import * as _path from 'path';
 import { fileURLToPath } from 'url';
+import Controller from '../controllers/Controller';
 
 const __dirname = _path.dirname(fileURLToPath(import.meta.url));
 
@@ -69,10 +70,10 @@ class DamiApp {
     });
     app.use(track.start);
 
-    const controllers = this.controllers;
-    for (const control of Object.keys(controllers)) {
+    const controllers = this.getControllers(this.controllers);
+    for (const contr of controllers) {
+      const [control, controller] = contr
       const router = express.Router();
-      const controller = controllers[control];
       controller.setPath(`/${control}`);
       const routList = controller.route();
       for (const ba of controller.beforeAction()) {
@@ -152,6 +153,17 @@ class DamiApp {
     app.use(track.end);
     app.listen(Dami.port, () => console.log(`Your app listening on port ${Dami.port}!`));
   };
+
+  private getControllers(controller: object, newController: Array<any> = [], con = '') {
+    for (const cont of Object.keys(controller)) {
+      if (!(controller[cont] instanceof Controller)) {
+        newController = this.getControllers(controller[cont], newController, con == '' ? cont : con + '/' + cont)
+      } else {
+        newController.push([con == '' ? cont : con + '/' + cont, controller[cont]])
+      }
+    }
+    return newController;
+  }
 }
 
 export default DamiApp;
