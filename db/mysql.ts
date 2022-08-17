@@ -1,4 +1,7 @@
 import * as mysql from 'mysql';
+
+
+type SqlQuery = [string, Array<string | number>];
 class Mysql {
   private con: any;
   constructor(dbConfig: object) {
@@ -8,7 +11,14 @@ class Mysql {
   format(query: string, values: Array<string | number>) {
     return mysql.format(query, values)
   }
-  query = (sql: string, callback?: (error: Error, result: Array<any>) => void) => {
+
+  query = (sqlQuery: string | SqlQuery, callback?: (error: Error, result: Array<any>) => void) => {
+    let sql = "";
+    if (sqlQuery instanceof String) {
+      sql = sqlQuery.toString();
+    } else {
+      sql = mysql.format(sqlQuery[0], [...sqlQuery[1]])
+    }
     return new Promise((resolve, reject) => {
       this.con.getConnection((err1: Error, connection) => {
         if (err1) throw err1;
@@ -24,7 +34,13 @@ class Mysql {
     });
   };
 
-  execute = (sql, callback?) => {
+  execute = (sqlQuery: SqlQuery | string, callback?) => {
+    let sql = "";
+    if (sqlQuery instanceof String) {
+      sql = sqlQuery.toString();
+    } else {
+      sql = mysql.format(sqlQuery[0], [...sqlQuery[1]])
+    }
     console.log(sql, 'query')
     return new Promise((resolve, reject) => {
       this.con.getConnection((err1: Error, connection) => {
@@ -47,7 +63,7 @@ class Mysql {
     });
   };
 
-  insert = (sql, records, callback?) => {
+  insert = (sql: string, records, callback?) => {
     return new Promise((resolve, reject) => {
       this.con.getConnection((err1: Error, connection) => {
         if (err1) throw err1;
