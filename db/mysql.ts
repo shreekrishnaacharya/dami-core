@@ -34,6 +34,16 @@ class Mysql {
     });
   };
 
+  queryOne = (sqlQuery: string | SqlQuery, callback?: (error: Error, result: Array<any>) => void) => {
+    return this.query(sqlQuery, callback).then((res: Array<any>) => {
+      if (res.length > 0) {
+        return res[0]
+      } else {
+        res
+      }
+    })
+  };
+
   execute = (sqlQuery: SqlQuery | string, callback?) => {
     let sql = "";
     if (sqlQuery instanceof String) {
