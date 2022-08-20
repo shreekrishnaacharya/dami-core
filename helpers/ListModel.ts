@@ -1,8 +1,22 @@
 class ListModel {
   private list: any[];
-  constructor() {
-    this.list = [];
+  constructor(list = []) {
+    this.list = list;
   }
+
+  map(func: Function) {
+    return this.list.map((e, i, a) => func(e, i, a))
+  }
+
+  forEach(func: Function) {
+    return this.list.forEach((e, i, a) => func(e, i, a))
+  }
+
+  filter(func: Function) {
+    const list = this.list.filter((e, i, a) => func(e, i, a))
+    return new ListModel(list)
+  }
+
   add(model: any) {
     this.list.push(model);
   }
@@ -15,10 +29,14 @@ class ListModel {
   clear() {
     this.list = [];
   }
-  toJson() {
-    return this.list.map((model: any) => {
-      return model.toJson();
-    });
+  async toJson() {
+    return new Promise((resolve) => {
+      let arr = [];
+      this.list.forEach(async (model: any) => {
+        arr.push(await model.toJson())
+      });
+      resolve(arr)
+    })
   }
   size() {
     return this.list.length;

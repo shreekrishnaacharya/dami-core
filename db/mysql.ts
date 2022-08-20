@@ -19,6 +19,7 @@ class Mysql {
     } else {
       sql = mysql.format(sqlQuery[0], [...sqlQuery[1]])
     }
+    console.log(sql)
     return new Promise((resolve, reject) => {
       this.con.getConnection((err1: Error, connection) => {
         if (err1) throw err1;
@@ -46,7 +47,7 @@ class Mysql {
 
   execute = (sqlQuery: SqlQuery | string, callback?) => {
     let sql = "";
-    if (sqlQuery instanceof String) {
+    if (typeof sqlQuery === "string") {
       sql = sqlQuery.toString();
     } else {
       sql = mysql.format(sqlQuery[0], [...sqlQuery[1]])
