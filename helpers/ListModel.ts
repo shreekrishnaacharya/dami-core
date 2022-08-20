@@ -30,13 +30,9 @@ class ListModel {
     this.list = [];
   }
   async toJson() {
-    return new Promise((resolve) => {
-      let arr = [];
-      this.list.forEach(async (model: any) => {
-        arr.push(await model.toJson())
-      });
-      resolve(arr)
-    })
+    return Promise.all(this.list.map(async (model: any) => {
+      return model.toJson()
+    }))
   }
   size() {
     return this.list.length;

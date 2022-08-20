@@ -46,11 +46,14 @@ abstract class ActiveRecords extends ActiveQuery {
 
   public getVisibleFields(value: object) {
     const visible = this.visibility();
-    if (!(this.scenario in visible)) {
-      return this.filterAttribute(value);
+    let fields = this.getAttName()
+    if (this.scenario in visible) {
+      fields = visible[this.scenario]
+    } else if (this.fields() !== null) {
+      return value;
     }
     let flist = {};
-    visible[this.scenario].forEach(e => {
+    fields.forEach(e => {
       if (e in value) {
         flist[e] = value[e]
       }
@@ -88,8 +91,6 @@ abstract class ActiveRecords extends ActiveQuery {
     }
     return isLoaded;
   }
-
-
 
   async toJson() {
     if (this.isEmpty) {
