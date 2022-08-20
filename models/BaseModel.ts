@@ -8,7 +8,7 @@ abstract class BaseModel implements IActiveModel {
   protected tableName: string;
   private _oldAttributes: object = {};
   private _attributes: object = {};
-  private _attributeName: string[] = ['id'];
+  private _attributeName: string[] = [];
   protected asModelFlag: boolean = true;
   protected primaryKey: number;
   private _errorFlag: boolean = false;
