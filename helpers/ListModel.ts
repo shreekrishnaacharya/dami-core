@@ -5,11 +5,12 @@ class ListModel {
   }
 
   map(func: Function) {
-    return this.list.map((e, i, a) => func(e, i, a))
+    this.list = this.list.map((e, i, a) => func(e, i, a))
+    return this
   }
 
   forEach(func: Function) {
-    return this.list.forEach((e, i, a) => func(e, i, a))
+    this.list.forEach((e, i, a) => func(e, i, a))
   }
 
   filter(func: Function) {

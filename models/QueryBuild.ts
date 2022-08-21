@@ -197,7 +197,11 @@ class QueryBuild {
           where = where + ')';
         } else {
           for (const co of Object.keys(cond.condition)) {
-            where += ` ${co}=? AND`;
+            if (Array.isArray(cond.condition[co])) {
+              where += ` ${co} IN (?) AND`;
+            } else {
+              where += ` ${co}=? AND`;
+            }
             this.conditionValue.push(cond.condition[co]);
           }
           where = where.slice(0, where.length - 3) + ')';

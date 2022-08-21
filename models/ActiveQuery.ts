@@ -9,7 +9,8 @@ class ActiveQuery extends Connection {
   private isAll: boolean;
   public joinOne: any[];
   public joinMany: any[];
-
+  private _buildQuery: QueryBuild;
+  private _glueQuery: any[]
   ['constructor']: any;
   constructor() {
     super();
@@ -17,6 +18,7 @@ class ActiveQuery extends Connection {
     this.isAll = false;
     this.joinOne = [];
     this.joinMany = [];
+    this._glueQuery = [];
   }
 
   onResult(callback: (e: any) => void) {
@@ -176,6 +178,30 @@ class ActiveQuery extends Connection {
     return this.pPromise(this.query());
   }
 
+  getGlueBuild(result) {
+    let resultSet = result;
+    const promish = this._glueQuery.map((gk) => {
+      const [qr, nam] = gk
+      let qury = qr(result);
+      if (typeof qury != "string") {
+        qury = qury.build()
+      }
+      return this.rawQuery(qury).then((res: Array<any>) => {
+        resultSet = resultSet.map((rs, i) => {
+          const newmod = res.find(e => rs.id == e[this.getMyId()])
+          if (newmod !== undefined) {
+            delete newmod[this.getMyId()]
+            rs[nam] = newmod
+          } else {
+            rs[nam] = null
+          }
+          return rs
+        })
+      })
+    })
+    return Promise.all(promish).then(e => resultSet)
+  }
+
   getBuild() {
     return new QueryBuild().select(this.getSelectAs()).doLeftJoin(this.joinOne).from(this.tableName);
   }
@@ -207,6 +233,11 @@ class ActiveQuery extends Connection {
   protected hasOne(table: any, condition: object, name: string) {
     this.joinOne.push([name, table, condition]);
     return this;
+  }
+
+  protected glueQuery(fun: Function, name: string) {
+    this._glueQuery.push([fun, name]);
+    return this
   }
 
   protected hasMany(table: any, condition: object, name: string) {
@@ -280,9 +311,12 @@ class ActiveQuery extends Connection {
         output.push(model);
       }
     }
+
     joinTable.setResult(output);
     if (this.isAll) {
       return joinTable.getResult().then((r) => {
+        return this.getGlueBuild(r)
+      }).then((r) => {
         if (!this.asModelFlag) {
           return r;
         }
@@ -294,12 +328,14 @@ class ActiveQuery extends Connection {
           return allModel;
         }
         return r;
-      });
+      })
     }
     this.isEmpty = false;
     return joinTable.getResult().then((r) => {
-      return r[0];
-    });
+      return this.getGlueBuild(r)
+    }).then(r => r[0])
+
+
   }
 }
 

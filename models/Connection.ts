@@ -70,6 +70,9 @@ abstract class Connection extends BaseModel {
     this.queryType = Query.SELECT;
     return Connection.mysql.query(this.queryString, this.callback);
   }
+  protected rawQuery(query: string) {
+    return Connection.mysql.query(query, this.callback);
+  }
 }
 
 export { Connection };
