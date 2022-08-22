@@ -2,16 +2,16 @@ class JoinTable {
   private resultSet = [];
   private model = null;
   private promish = [];
-  setModel(model) {
+  setModel(model): this {
     this.model = model;
     return this;
   }
-  setResult(resultSet) {
+  setResult(resultSet): this {
     //  console.log("hello1");
     this.resultSet = resultSet;
     return this;
   }
-  join() {
+  join(): this {
     this.model.joinMany.forEach(([name, table, [fkCon, _id]]) => {
       const values = [];
       this.resultSet.forEach((r) => {
@@ -19,8 +19,9 @@ class JoinTable {
       });
       this.process(values, name, table, [fkCon, _id]);
     });
+    return this
   }
-  process(values, nam, tableInst, [fkCon, idCon]) {
+  process(values, nam, tableInst, [fkCon, idCon]): Promise<Array<any>> {
     values = values.filter((e) => (e === null ? false : true));
     if (values.length === 0) {
       return;
@@ -53,7 +54,7 @@ class JoinTable {
     this.promish.push(promise);
     // console.log("hello2");
   }
-  getResult() {
+  getResult(): Promise<Array<any>> {
     this.join();
     if (this.promish.length === 0) {
       return Promise.resolve(this.resultSet);

@@ -1,7 +1,7 @@
 import Dami from '../app/Dami';
 
 class Url {
-  static to(path: string, params?: object | (string | number)[], absolute?: boolean) {
+  static to(path: string, params?: object | (string | number)[], absolute?: boolean): string {
     let _url = '/' + path;
     if (Array.isArray(params)) {
       _url += '/' + params.map((e) => (e === null || e === undefined || e === '' ? 'null' : e)).join('/');

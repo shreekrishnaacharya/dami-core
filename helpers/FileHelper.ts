@@ -25,7 +25,7 @@ class FileHelper {
     }
   }
 
-  static saveFile(file, path: string, name?: string) {
+  static saveFile(file, path: string, name?: string): string | boolean {
     // const tpath = path + '/thumb/' + name;
     if (name === undefined) {
       const ext = _path.extname(file.name);

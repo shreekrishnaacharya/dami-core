@@ -8,11 +8,11 @@ class Mysql {
     this.con = mysql.createPool(dbConfig);
   }
 
-  format(query: string, values: Array<string | number>) {
+  format(query: string, values: Array<string | number>): string {
     return mysql.format(query, values)
   }
 
-  query = (sqlQuery: string | SqlQuery, callback?: (error: Error, result: Array<any>) => void) => {
+  query = (sqlQuery: string | SqlQuery, callback?: (error: Error, result: Array<any>) => void): Promise<Array<JSON>> => {
     let sql = "";
     if (typeof sqlQuery === "string") {
       sql = sqlQuery.toString();
@@ -35,17 +35,17 @@ class Mysql {
     });
   };
 
-  queryOne = (sqlQuery: string | SqlQuery, callback?: (error: Error, result: Array<any>) => void) => {
+  queryOne = (sqlQuery: string | SqlQuery, callback?: (error: Error, result: Array<any>) => void): Promise<JSON | null> => {
     return this.query(sqlQuery, callback).then((res: Array<any>) => {
       if (res.length > 0) {
         return res[0]
       } else {
-        res
+        return null
       }
     })
   };
 
-  execute = (sqlQuery: SqlQuery | string, callback?) => {
+  execute = (sqlQuery: SqlQuery | string, callback?): Promise<any> => {
     let sql = "";
     if (typeof sqlQuery === "string") {
       sql = sqlQuery.toString();
@@ -74,7 +74,7 @@ class Mysql {
     });
   };
 
-  insert = (sql: string, records, callback?) => {
+  insert = (sql: string, records, callback?): Promise<any> => {
     return new Promise((resolve, reject) => {
       this.con.getConnection((err1: Error, connection) => {
         if (err1) throw err1;

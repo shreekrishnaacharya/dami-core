@@ -59,7 +59,7 @@ export default class DataProvider {
     return this;
   }
 
-  getList() {
+  getList(): Promise<any> {
     // load query
     const queryAttr = this.model.filterAttribute(this.request.query);
     for (const nam of Object.keys(queryAttr)) {
@@ -95,12 +95,12 @@ export default class DataProvider {
     });
   }
 
-  query(callback: (query: QueryBuild) => QueryBuild) {
+  query(callback: (query: QueryBuild) => QueryBuild): this {
     this.queryModel = callback(this.queryModel);
     return this;
   }
 
-  private getload() {
+  private getload(): void {
     if (this.request.query.hasOwnProperty(DPType.SORT)) {
       const scream = this.request.query.sort.toString();
       if (scream.charAt(0) === '-') {

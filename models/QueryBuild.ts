@@ -37,12 +37,12 @@ class QueryBuild {
     return this;
   };
 
-  from = (tableName: string) => {
+  from = (tableName: string): this => {
     this.fromQuery = tableName;
     return this;
   };
 
-  where = (condition: object | string) => {
+  where = (condition: object | string): this => {
     if (typeof condition === 'string') {
       this.conditionQuery.push({ type: '', format: 'string', condition });
     } else {
@@ -50,7 +50,7 @@ class QueryBuild {
     }
     return this;
   };
-  andWhere = (condition: object | string) => {
+  andWhere = (condition: object | string): this => {
     if (typeof condition === 'string') {
       this.conditionQuery.push({ type: 'AND', format: 'string', condition });
     } else {
@@ -59,7 +59,7 @@ class QueryBuild {
     return this;
   };
 
-  orWhere = (condition: string | object) => {
+  orWhere = (condition: string | object): this => {
     if (typeof condition === 'string') {
       this.conditionQuery.push({ type: 'OR', format: 'string', condition });
     } else {
@@ -68,7 +68,7 @@ class QueryBuild {
     return this;
   };
 
-  andFilterWhere = (condition: object | string) => {
+  andFilterWhere = (condition: object | string): this => {
     if (typeof condition === 'string') {
       this.conditionQuery.push({ type: 'AND', format: 'string', condition });
     } else if (Object.keys(this.removeEmpty(condition)).length > 0) {
@@ -77,7 +77,7 @@ class QueryBuild {
     return this;
   };
 
-  orFilterWhere = (condition: object | string) => {
+  orFilterWhere = (condition: object | string): this => {
     if (typeof condition === 'string') {
       this.conditionQuery.push({ type: 'OR', format: 'string', condition });
     } else if (Object.keys(this.removeEmpty(condition)).length > 0) {
@@ -86,7 +86,7 @@ class QueryBuild {
     return this;
   };
 
-  orderBy = (orderby: object) => {
+  orderBy = (orderby: object): this => {
     const orderList = [];
     for (const ord of Object.keys(orderby)) {
       orderList.push('`' + this.fromQuery + '`.`' + ord + '` ' + orderby[ord]);
@@ -95,16 +95,17 @@ class QueryBuild {
     return this;
   };
 
-  limit = (limit: number) => {
+  limit = (limit: number): this => {
     this.limitQuery = 'limit ' + limit;
     return this;
   };
 
-  offset(offset: number) {
+  offset(offset: number): this {
     this.offsetQuery = 'offset ' + offset;
+    return this;
   }
 
-  groupBy = (groupby: string | any[]) => {
+  groupBy = (groupby: string | any[]): this => {
     if (typeof groupby === 'string') {
       this.groupByQuery = 'GROUP BY ' + groupby;
     } else {
@@ -118,7 +119,7 @@ class QueryBuild {
     return this;
   };
 
-  query = (queryString: string, params?: any[]) => {
+  query = (queryString: string, params?: any[]): this => {
     this.queryString = queryString;
     if (params !== undefined) {
       this.conditionValue = [...params];
@@ -126,7 +127,7 @@ class QueryBuild {
     return this;
   };
 
-  build = (count?: boolean) => {
+  build = (count?: boolean): string => {
     if (this.queryString.length > 0) {
       return mysql.format(this.queryString, [...this.conditionValue]);
     }
@@ -156,7 +157,7 @@ class QueryBuild {
     return query;
   };
 
-  private doJoin = (query: string) => {
+  private doJoin = (query: string): string => {
     for (const [, modelIns, condition] of this.joinOne) {
       const model = new modelIns()
       this.selectQuery.push(model.getSelectAs());
@@ -174,7 +175,7 @@ class QueryBuild {
     return query;
   };
 
-  private doWhere = () => {
+  private doWhere = (): string => {
     let where = '';
     this.conditionValue = [];
     for (const cond of this.conditionQuery) {
@@ -219,7 +220,7 @@ class QueryBuild {
     return '';
   };
 
-  private removeEmpty = (obj: object) => {
+  private removeEmpty = (obj: object): object => {
     return Object.fromEntries(Object.entries(obj).filter(([_, v]) => v != null));
   };
 }

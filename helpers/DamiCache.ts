@@ -48,7 +48,7 @@ export default class DamiCache {
     };
   }
 
-  config(id: string, config?: DamiConfig) {
+  config(id: string, config?: DamiConfig): void {
     if (this.has(id)) {
       const val = this.cacheData[id];
       this.cacheData[id] = {
@@ -59,29 +59,29 @@ export default class DamiCache {
     }
   }
 
-  get(id: string) {
+  get(id: string): any {
     if (this.has(id)) {
       return this.cacheData[id][DCType.VALUE];
     }
     return undefined;
   }
-  has(id: string) {
+  has(id: string): boolean {
     return this.cacheData.hasOwnProperty(id) ? true : false;
   }
-  del(id: string) {
+  del(id: string): void {
     delete this.cacheData[id];
   }
-  keys() {
+  keys(): Array<any> {
     return Object.keys(this.cacheData);
   }
-  flush() {
+  flush(): void {
     this.cacheData = {};
   }
-  count() {
+  count(): number {
     return Object.keys(this.cacheData).length;
   }
 
-  private timeOut(id: string, time: number) {
+  private timeOut(id: string, time: number): void {
     this.cacheData[id][DCType.TTL] = 0;
     setTimeout(() => {
       if (this.cacheData[id][DCType.TTL] === 0) {
@@ -96,7 +96,7 @@ export default class DamiCache {
     }, time * 1000);
   }
 
-  private registerTtl() {
+  private registerTtl(): void {
     for (const key of Object.keys(this.cacheData)) {
       const value = this.cacheData[key];
       const seconds = new Date().getTime() / 1000;

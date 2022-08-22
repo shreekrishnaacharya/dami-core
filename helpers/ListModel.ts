@@ -1,24 +1,26 @@
-class ListModel {
-  private list: any[];
-  constructor(list = []) {
-    this.list = list;
-  }
+class ListModel<Model> extends Array {
+  private list: Model[];
 
-  map(func: Function) {
+  map(func: Function): this {
     this.list = this.list.map((e, i, a) => func(e, i, a))
     return this
   }
 
-  forEach(func: Function) {
+  forEach(func: Function): void {
     this.list.forEach((e, i, a) => func(e, i, a))
   }
 
-  filter(func: Function) {
+  filter(func: Function): ListModel<Model> {
     const list = this.list.filter((e, i, a) => func(e, i, a))
-    return new ListModel(list)
+    const tm = new ListModel<Model>()
+    tm.addAll(list)
+    return tm
   }
 
-  add(model: any) {
+  addAll(list: Model[]): void {
+    this.list = list;
+  }
+  add(model: Model): void {
     this.list.push(model);
   }
   remove(index: number) {
@@ -27,15 +29,15 @@ class ListModel {
     }
     this.list.splice(index, 1);
   }
-  clear() {
+  clear(): void {
     this.list = [];
   }
-  async toJson() {
+  async toJson(): Promise<Array<object>> {
     return Promise.all(this.list.map(async (model: any) => {
       return model.toJson()
     }))
   }
-  size() {
+  size(): number {
     return this.list.length;
   }
 

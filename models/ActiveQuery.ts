@@ -21,38 +21,38 @@ class ActiveQuery extends Connection {
     this._glueQuery = [];
   }
 
-  onResult(callback: (e: any) => void) {
+  onResult(callback: (e: any) => void): this {
     this.successCallback = (res) => {
       callback(this.getAtt(res));
     };
     return this;
   }
 
-  onError(callback: (e: any) => void) {
+  onError(callback: (e: any) => void): this {
     this.errorCallback = (err: Error) => {
       callback(err);
     };
     return this;
   }
 
-  async insertAll(columns: string[], record: any[][]) {
+  async insertAll(columns: string[], record: any[][]): Promise<boolean> {
     this.checkColumn(columns);
     let insertQuery = `INSERT INTO ${this.tableName}`;
     insertQuery += `(${columns.join(',')}) VALUES ?`;
     return this.pPromise(this.createCommand(insertQuery).bulkInsert([record]));
   }
-  async deleteAll(condition?: object) {
+  async deleteAll(condition?: object): Promise<boolean> {
     this.checkColumn(condition);
     const [dpn, values] = this.getDelete(condition);
     return this.pPromise(this.createCommand(mysql.format(dpn.toString(), [...values])).rawDelete());
   }
-  async updateAll(record: object, condition?: object) {
+  async updateAll(record: object, condition?: object): Promise<boolean> {
     this.checkColumn(record);
     this.checkColumn(condition);
     const [dpn, values] = this.getUpdate(record, condition);
     return this.pPromise(this.createCommand(mysql.format(dpn.toString(), [...values])).rawUpdate());
   }
-  async save(validate?: boolean) {
+  async save(validate?: boolean): Promise<boolean> {
     if (!this.isLoaded()) throw new Error('Model is not loaded');
     return Promise.resolve(this.beforeSave(Query.INSERT))
       .then((e) => {
@@ -90,8 +90,8 @@ class ActiveQuery extends Connection {
         return e;
       });
   }
-
-  async delete(id: number | string) {
+  /** delete the data of provided id, returns true on success and false on error */
+  async delete(id: number | string): Promise<boolean> {
     let searchid = id;
     if (id === undefined) {
       if (this.isEmpty) {
@@ -105,7 +105,9 @@ class ActiveQuery extends Connection {
     return this.pPromise(this.createCommand(mysql.format(dq, [searchid])).rawDelete());
   }
 
-  async update(id: number | string) {
+  /** update the current loaded data into provided id.
+   * Returns true on success and false on error */
+  async update(id: number | string): Promise<boolean> {
     let searchid = id;
     if (id === undefined) {
       if (this.isEmpty) {
@@ -134,7 +136,7 @@ class ActiveQuery extends Connection {
     return this.pPromise(this.createCommand(mysql.format(uq, values)).rawUpdate());
   }
 
-  async findOne(id: number | string) {
+  async findOne(id: number | string): Promise<this | null> {
     this.isAll = false;
     this.primaryKey = parseInt(id.toString(), 10);
     const bq = new QueryBuild()
@@ -147,7 +149,7 @@ class ActiveQuery extends Connection {
     return this.pPromise(this.query());
   }
 
-  find(callback?: (e: QueryBuild) => QueryBuild) {
+  find(callback?: (e: QueryBuild) => QueryBuild): this {
     if (callback === undefined) {
       this.createCommand(
         new QueryBuild().select(this.getSelectAs()).doLeftJoin(this.joinOne).from(this.tableName).build(),
@@ -160,17 +162,17 @@ class ActiveQuery extends Connection {
     return this;
   }
 
-  async one() {
+  async one(): Promise<this | null> {
     this.isAll = false;
     return this.pPromise(this.query());
   }
 
-  async all() {
+  async all(): Promise<any[] | ListModel<this>> {
     this.isAll = true;
     return this.pPromise(this.query());
   }
 
-  async findAll() {
+  async findAll(): Promise<any[] | ListModel<this>> {
     this.isAll = true;
     this.createCommand(
       new QueryBuild().select(this.getSelectAs()).from(this.tableName).doLeftJoin(this.joinOne).build(),
@@ -178,7 +180,7 @@ class ActiveQuery extends Connection {
     return this.pPromise(this.query());
   }
 
-  getGlueBuild(result) {
+  getGlueBuild(result: Array<this>): Promise<Array<this>> {
     let resultSet = result;
     const promish = this._glueQuery.map((gk) => {
       const [qr, nam] = gk
@@ -202,7 +204,7 @@ class ActiveQuery extends Connection {
     return Promise.all(promish).then(e => resultSet)
   }
 
-  getBuild() {
+  getBuild(): QueryBuild {
     return new QueryBuild().select(this.getSelectAs()).doLeftJoin(this.joinOne).from(this.tableName);
   }
 
@@ -273,7 +275,7 @@ class ActiveQuery extends Connection {
       this.load({ id: this.primaryKey, ...this.getAttributes() });
       this.isEmpty = false;
       this.isNew = false;
-      // this.afterSave(Query.INSERT);
+      this.afterSave(Query.INSERT);
       return true;
     }
     if (result.length === 0) {
@@ -334,8 +336,6 @@ class ActiveQuery extends Connection {
     return joinTable.getResult().then((r) => {
       return this.getGlueBuild(r)
     }).then(r => r[0])
-
-
   }
 }
 

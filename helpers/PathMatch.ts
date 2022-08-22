@@ -1,10 +1,10 @@
-export function PathMatch(path: string, url: string) {
+export function PathMatch(path: string, url: string): boolean {
   const expression = Match(path);
   const match = expression.exec(url) || false;
   return !!match && match[0] === match.input;
 }
 
-export function PathFrom(from: string, to: string) {
+export function PathFrom(from: string, to: string): string {
   const fromList = from.split('/');
   const toList = to.split('/');
   const relativePath = [];
@@ -36,7 +36,7 @@ export function PathFrom(from: string, to: string) {
   return relativePath.join('/');
 }
 
-function Match(path: string) {
+function Match(path: string): RegExp {
   const pattern = path
     // Escape literal dots
     .replace(/\./g, '\\.')
