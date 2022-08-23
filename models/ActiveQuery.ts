@@ -3,6 +3,7 @@ import QueryBuild from './QueryBuild';
 import { Connection, Query } from './Connection';
 import ListModel from '../helpers/ListModel';
 import JoinTable from '../helpers/JoinTable';
+import assert from 'assert'
 
 class ActiveQuery extends Connection {
   private isNew: boolean;
@@ -232,6 +233,7 @@ class ActiveQuery extends Connection {
       if (typeof qury != "string") {
         qury = qury.build()
       }
+      assert(this.validateGlue(qury))
       return this.rawQuery(qury).then((res: Array<any>) => {
         resultSet = resultSet.map((rs, i) => {
           const newmod = res.find(e => rs.id == e[this.getMyId()])
@@ -410,6 +412,14 @@ class ActiveQuery extends Connection {
     return joinTable.getResult().then((r) => {
       return this.getGlueBuild(r)
     }).then(r => r[0])
+  }
+
+  private validateGlue(query: string) {
+    try {
+      if (query.toLowerCase().split("select")[1].split("from")[0].includes(this.getMyId()))
+        return true
+    } catch (err) { }
+    return false
   }
 }
 

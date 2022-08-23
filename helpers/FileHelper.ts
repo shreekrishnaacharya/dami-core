@@ -25,7 +25,7 @@ class FileHelper {
     }
   }
 
-  static saveFile(file, path: string, name?: string): string | boolean {
+  static saveFile(file, path: string, name?: string): Promise<string | boolean> {
     // const tpath = path + '/thumb/' + name;
     if (name === undefined) {
       const ext = _path.extname(file.name);
@@ -40,10 +40,10 @@ class FileHelper {
     return file.mv(_pathAddress + name).then((e) => {
       if (e) return false;
       return fname;
-    });
+    }).catch(e => false)
   }
 
-  static saveImage(image, path: string, imageConfig?: ImageConfig) {
+  static saveImage(image, path: string, imageConfig?: ImageConfig): Promise<string | boolean> {
     const { size, t_size } = imageConfig;
     let { name } = imageConfig;
     const _pathAddress = Dami.getPath(path);
@@ -99,7 +99,7 @@ class FileHelper {
       })
       .then(() => {
         return fname;
-      });
+      }).catch(e => false)
   }
 }
 
