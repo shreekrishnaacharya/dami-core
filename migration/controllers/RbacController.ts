@@ -29,7 +29,7 @@ class RbacController extends Controller<any> {
     const model = new Role();
     try {
       const result = await model.asModel().findAll();
-      res.send(result.toJson());
+      res.send(await result.toJson());
     } catch (err) {
       res.status(HttpCode.INTERNAL_SERVER_ERROR).send({});
     }

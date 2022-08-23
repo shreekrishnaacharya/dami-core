@@ -159,11 +159,12 @@ class ActiveQuery extends Connection {
   /**
    * find one model for given id
    * @param id : id to find the row
-   * @returns : model on found, null if not found
+   * @returns : if not found returns null else model
    */
   findOne(id: number | string): Promise<this | null> {
     this.isAll = false;
     this.primaryKey = parseInt(id.toString(), 10);
+    this.asModelFlag = true
     const bq = new QueryBuild()
       .select(this.getSelectAs())
       .from(this.tableName)
@@ -192,25 +193,26 @@ class ActiveQuery extends Connection {
   }
   /**
    * get one model
-   * @returns : on found model, else null
+   * @returns : if not found returns null else model
    */
   async one(): Promise<this | null> {
     this.isAll = false;
+    this.asModel()
     return this.pPromise(this.query());
   }
   /**
    * get list of model
-   * @returns array of model or ListModel with model
+   * @returns array of model or ListModel of model
    */
-  async all(): Promise<any[] | ListModel<this>> {
+  async all(): Promise<ListModel<this | object>> {
     this.isAll = true;
     return this.pPromise(this.query());
   }
   /**
    * get list of model
-   * @returns array of model or ListModel with model
+   * @returns array of model or ListModel of model
    */
-  async findAll(): Promise<any[] | ListModel<this>> {
+  async findAll(): Promise<ListModel<this | object>> {
     this.isAll = true;
     this.createCommand(
       new QueryBuild().select(this.getSelectAs()).from(this.tableName).doLeftJoin(this.joinOne).build(),
@@ -355,11 +357,16 @@ class ActiveQuery extends Connection {
         this.isEmpty = true;
         return this.isAll ? new ListModel<this>() : null;
       } else {
-        return this.isAll ? [] : null;
+        return this.isAll ? new ListModel<object>() : null;
       }
     }
     if (this.isCustomColumn) {
-      return this.isAll ? result : result[0];
+      if (!this.isAll) {
+        return result[0]
+      }
+      const res = new ListModel<this>()
+      res.addAll(result)
+      return res;
     }
     const joinTable = new JoinTable();
     joinTable.setModel(this);
@@ -391,14 +398,9 @@ class ActiveQuery extends Connection {
       return joinTable.getResult().then((r) => {
         return this.getGlueBuild(r)
       }).then((r) => {
-        if (!this.asModelFlag) {
-          return r;
-        }
         if (this.toListFlag) {
           const allModel = new ListModel<this>();
-          r.forEach((a) => {
-            allModel.add(a);
-          });
+          allModel.addAll(r)
           return allModel;
         }
         return r;

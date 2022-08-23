@@ -12,7 +12,7 @@ class Mysql {
     return mysql.format(query, values)
   }
 
-  query = (sqlQuery: string | SqlQuery, callback?: (error: Error, result: Array<any>) => void): Promise<Array<JSON>> => {
+  query = (sqlQuery: string | SqlQuery, callback?: (error: Error, result: Array<any>) => void): Promise<Array<object>> => {
     let sql = "";
     if (typeof sqlQuery === "string") {
       sql = sqlQuery.toString();
