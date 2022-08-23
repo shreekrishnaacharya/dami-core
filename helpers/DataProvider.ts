@@ -85,7 +85,7 @@ export default class DataProvider {
       this.queryModel.offset(0);
     }
 
-    const promish2 = this.model.setBuild(this.queryModel);
+    const promish2 = this.model.setBuild(this.queryModel).all();
     return Promise.all([promish1, promish2]).then((val) => {
       this.response.setHeader('x-pagination-per-page', this.pageSize);
       this.response.setHeader('x-pagination-page-count', val[1].size());

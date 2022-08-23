@@ -80,7 +80,7 @@ abstract class BaseModel implements IActiveModel {
   filterAttribute(value: object): object {
     throw new Error('Method not implemented.');
   }
-  setBuild(build: QueryBuild): Promise<any> {
+  setBuild(build: QueryBuild): this {
     throw new Error('Method not implemented.');
   }
   toList(flag: boolean): IActiveModel {

@@ -9,7 +9,10 @@ abstract class ActiveRecords extends ActiveQuery {
     super();
     this.tableName = tableName;
   }
-
+  /**
+   * check if the loaded data are valid
+   * @returns : true on validate, false on error
+   */
   public validate(): Promise<boolean> {
     return new Promise((resolve, reject) => {
       const _val = this._validate;
@@ -33,7 +36,12 @@ abstract class ActiveRecords extends ActiveQuery {
       resolve(this.hasError());
     })
   }
-
+  /**
+   * filter the loaded value againse model attribute,
+   * remove all data that does not exist in model attribute
+   * @param value : object to be filter
+   * @returns : valid attributes
+   */
   public filterAttribute(value: object) {
     const val = {};
     this.getAttName().forEach((e) => {
@@ -43,7 +51,11 @@ abstract class ActiveRecords extends ActiveQuery {
     });
     return val;
   }
-
+  /**
+   * return all visiable fields on current scenario
+   * @param value : field to be filter
+   * @returns : visiable fields
+   */
   public getVisibleFields(value: object) {
     const visible = this.visibility();
     let fields = this.getAttName()
@@ -60,8 +72,12 @@ abstract class ActiveRecords extends ActiveQuery {
     })
     return flist;
   }
-
-  public getAttributes(all = false) {
+  /**
+   * get all attributes of current model
+   * @param all : on true, includes custom attributes
+   * @returns : attributed of current model
+   */
+  public getAttributes(all = false): object {
     const result = { ...this._getAttributes() };
     if (all) {
       for (const arr of this.customAttributes) {
@@ -70,7 +86,11 @@ abstract class ActiveRecords extends ActiveQuery {
     }
     return result;
   }
-
+  /**
+   * load all value to respective attribute
+   * @param attributes : attributes to be loaded
+   * @returns : true on load, false if supplied attribute does not contains any attribute of model
+   */
   load(attributes: object) {
     if (isEmpty(attributes)) {
       return false;
@@ -92,6 +112,10 @@ abstract class ActiveRecords extends ActiveQuery {
     return isLoaded;
   }
 
+  /**
+   * converts the model attribute value to json
+   * @returns : json with model attribute values
+   */
   async toJson() {
     if (this.isEmpty) {
       return {};

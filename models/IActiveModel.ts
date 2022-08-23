@@ -12,7 +12,7 @@ export default interface IActiveModel {
   addError(key: string, message: string): void;
   getErrors(): object;
   getError(attribute: string): string[];
-  setBuild(build: QueryBuild): Promise<any>;
+  setBuild(build: QueryBuild): this;
   toList(flag: boolean): IActiveModel;
   setHasMany(many: any[]): IActiveModel;
   reset(): IActiveModel;
@@ -21,11 +21,11 @@ export default interface IActiveModel {
   /* tslint:disable:ban-types */
   onError(callBack: Function): IActiveModel;
   insertAll(columns: string[], record: (number | string)[][]): Promise<any>;
-  deleteAll(condition?: object): Promise<any>;
-  updateAll(record: object, condition?: object): Promise<any>;
-  save(): Promise<any>;
-  delete(id: number | string): Promise<any>;
-  update(id: number | string): Promise<any>;
+  deleteAll(condition?: object): Promise<boolean>;
+  updateAll(record: object, condition?: object): Promise<boolean>;
+  save(): Promise<boolean>;
+  delete(id: number | string): Promise<boolean>;
+  update(id: number | string): Promise<boolean>;
   findOne(id: number | string): Promise<any>;
   /* tslint:disable:ban-types */
   find(callback?: Function): IActiveModel;

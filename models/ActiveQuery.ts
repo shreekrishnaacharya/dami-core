@@ -35,7 +35,14 @@ class ActiveQuery extends Connection {
     return this;
   }
 
-  async insertAll(columns: string[], record: any[][]): Promise<boolean> {
+  /**
+   * Insert multiple rows into table
+   * @param columns : column list
+   * @param record : respective row values
+   * @returns boolean : true if success, false if failed
+   */
+
+  insertAll(columns: string[], record: any[][]): Promise<boolean> {
     this.checkColumn(columns);
     let insertQuery = `INSERT INTO ${this.tableName}`;
     insertQuery += `(${columns.join(',')}) VALUES ?`;
@@ -52,6 +59,13 @@ class ActiveQuery extends Connection {
     const [dpn, values] = this.getUpdate(record, condition);
     return this.pPromise(this.createCommand(mysql.format(dpn.toString(), [...values])).rawUpdate());
   }
+
+
+  /**
+   * Insert the loaded data of model into table
+   * @param validate : validate attributes before save or not - default true
+   * @returns : true on success and false on failed
+   */
   async save(validate?: boolean): Promise<boolean> {
     if (!this.isLoaded()) throw new Error('Model is not loaded');
     return Promise.resolve(this.beforeSave(Query.INSERT))
@@ -90,7 +104,11 @@ class ActiveQuery extends Connection {
         return e;
       });
   }
-  /** delete the data of provided id, returns true on success and false on error */
+  /**
+   * delete the data of provided id
+   * @param id : id of row to be deleted
+   * @returns : true on success and false on failed
+   */
   async delete(id: number | string): Promise<boolean> {
     let searchid = id;
     if (id === undefined) {
@@ -105,8 +123,11 @@ class ActiveQuery extends Connection {
     return this.pPromise(this.createCommand(mysql.format(dq, [searchid])).rawDelete());
   }
 
-  /** update the current loaded data into provided id.
-   * Returns true on success and false on error */
+  /**
+   * update the current loaded data into provided id
+   * @param id : id of row to be updated
+   * @returns : true on success and false on failed
+   */
   async update(id: number | string): Promise<boolean> {
     let searchid = id;
     if (id === undefined) {
@@ -135,8 +156,12 @@ class ActiveQuery extends Connection {
     uq = uq.slice(0, -1) + ` WHERE ${this.tableName}.id=? `;
     return this.pPromise(this.createCommand(mysql.format(uq, values)).rawUpdate());
   }
-
-  async findOne(id: number | string): Promise<this | null> {
+  /**
+   * find one model for given id
+   * @param id : id to find the row
+   * @returns : model on found, null if not found
+   */
+  findOne(id: number | string): Promise<this | null> {
     this.isAll = false;
     this.primaryKey = parseInt(id.toString(), 10);
     const bq = new QueryBuild()
@@ -148,7 +173,11 @@ class ActiveQuery extends Connection {
     this.createCommand(bq);
     return this.pPromise(this.query());
   }
-
+  /**
+   * find the model based on callback QueryBuild
+   * @param callback : Callback function with argument type "QueryBuild"
+   * @returns : current model
+   */
   find(callback?: (e: QueryBuild) => QueryBuild): this {
     if (callback === undefined) {
       this.createCommand(
@@ -161,17 +190,26 @@ class ActiveQuery extends Connection {
     }
     return this;
   }
-
+  /**
+   * get one model
+   * @returns : on found model, else null
+   */
   async one(): Promise<this | null> {
     this.isAll = false;
     return this.pPromise(this.query());
   }
-
+  /**
+   * get list of model
+   * @returns array of model or ListModel with model
+   */
   async all(): Promise<any[] | ListModel<this>> {
     this.isAll = true;
     return this.pPromise(this.query());
   }
-
+  /**
+   * get list of model
+   * @returns array of model or ListModel with model
+   */
   async findAll(): Promise<any[] | ListModel<this>> {
     this.isAll = true;
     this.createCommand(
@@ -179,8 +217,12 @@ class ActiveQuery extends Connection {
     );
     return this.pPromise(this.query());
   }
-
-  getGlueBuild(result: Array<this>): Promise<Array<this>> {
+  /**
+   * 
+   * @param result : list of model
+   * @returns :list of model with glued attribute(s)
+   */
+  private getGlueBuild(result: Array<this>): Promise<Array<this>> {
     let resultSet = result;
     const promish = this._glueQuery.map((gk) => {
       const [qr, nam] = gk
@@ -203,17 +245,26 @@ class ActiveQuery extends Connection {
     })
     return Promise.all(promish).then(e => resultSet)
   }
-
+  /**
+   * get QueryBuild of current model
+   * @returns : QueryBuild
+   */
   getBuild(): QueryBuild {
     return new QueryBuild().select(this.getSelectAs()).doLeftJoin(this.joinOne).from(this.tableName);
   }
-
-  async setBuild(build: QueryBuild) {
-    this.isAll = true;
+  /**
+   * 
+   * @param build : query build
+   */
+  setBuild(build: QueryBuild): this {
     this.createCommand(build.build());
-    return this.pPromise(this.query());
+    return this
   }
-
+  /**
+   * set return type, either as model or json object
+   * @param flag : true for object, false for model
+   * @returns : current model
+   */
   asObject(flag?: boolean) {
     if (flag !== undefined) {
       this.asModelFlag = !flag;
@@ -222,7 +273,11 @@ class ActiveQuery extends Connection {
     }
     return this;
   }
-
+  /**
+   * set return type, either as model or json object
+   * @param flag : true for model, false for json object
+   * @returns : current model
+   */
   asModel(flag?: boolean) {
     if (flag !== undefined) {
       this.asModelFlag = flag;
@@ -231,17 +286,34 @@ class ActiveQuery extends Connection {
     }
     return this;
   }
-
+  /**
+   * setup join table on foreign key
+   * @param table : model of table to join
+   * @param condition : condition to join table on
+   * @param name : attribute where join model will be available
+   * @returns : current model
+   */
   protected hasOne(table: any, condition: object, name: string) {
     this.joinOne.push([name, table, condition]);
     return this;
   }
-
+  /**
+   * force join table
+   * @param fun : function that will have logic to build QueryBuild and return
+   * @param name : attribute where join model will be available
+   * @returns : current model
+   */
   protected glueQuery(fun: Function, name: string) {
     this._glueQuery.push([fun, name]);
     return this
   }
-
+  /**
+   * setup join on child table for many
+   * @param table : model of table to join
+   * @param condition : condition to join table on
+   * @param name : attribute where join model will be available
+   * @returns : current model
+   */
   protected hasMany(table: any, condition: object, name: string) {
     this.joinMany.push([name, table, condition]);
     return this;
@@ -281,7 +353,7 @@ class ActiveQuery extends Connection {
     if (result.length === 0) {
       if (this.asModelFlag) {
         this.isEmpty = true;
-        return this.isAll ? new ListModel() : null;
+        return this.isAll ? new ListModel<this>() : null;
       } else {
         return this.isAll ? [] : null;
       }
@@ -323,7 +395,7 @@ class ActiveQuery extends Connection {
           return r;
         }
         if (this.toListFlag) {
-          const allModel = new ListModel();
+          const allModel = new ListModel<this>();
           r.forEach((a) => {
             allModel.add(a);
           });
