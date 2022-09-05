@@ -1,4 +1,5 @@
 import * as mysql from 'mysql';
+import { isEmpty } from '../helpers/functions';
 class QueryBuild {
   private selectQuery: any[];
   private conditionQuery: any[];
@@ -111,11 +112,20 @@ class QueryBuild {
  * @param condition 
  * @returns : current model
  */
-  andFilterWhere = (condition: object | string): this => {
+  andFilterWhere = (condition: object | string | Array<any>): this => {
     if (typeof condition === 'string') {
       this.conditionQuery.push({ type: 'AND', format: 'string', condition });
-    } else if (Object.keys(this.removeEmpty(condition)).length > 0) {
-      this.conditionQuery.push({ type: 'AND', format: 'object', condition });
+    } else if (Array.isArray(condition)) {
+      console.log(condition, 'array')
+      if (!isEmpty(condition[2])) {
+        this.conditionQuery.push({ type: 'AND', format: 'array', condition });
+      }
+    } else {
+      const con = this.removeEmpty(condition)
+      console.log(condition, 'obj')
+      if (Object.keys(con).length > 0) {
+        this.conditionQuery.push({ type: 'AND', format: 'object', condition });
+      }
     }
     return this;
   };
@@ -128,11 +138,18 @@ class QueryBuild {
  * @param condition 
  * @returns : current model
  */
-  orFilterWhere = (condition: object | string): this => {
+  orFilterWhere = (condition: object | string | Array<any>): this => {
     if (typeof condition === 'string') {
       this.conditionQuery.push({ type: 'OR', format: 'string', condition });
-    } else if (Object.keys(this.removeEmpty(condition)).length > 0) {
-      this.conditionQuery.push({ type: 'OR', format: 'object', condition });
+    } else if (Array.isArray(condition)) {
+      if (!isEmpty(condition[2])) {
+        this.conditionQuery.push({ type: 'OR', format: 'array', condition });
+      }
+    } else {
+      const con = this.removeEmpty(condition)
+      if (Object.keys(con).length > 0) {
+        this.conditionQuery.push({ type: 'OR', format: 'object', condition });
+      }
     }
     return this;
   };
@@ -288,7 +305,7 @@ class QueryBuild {
   };
 
   private removeEmpty = (obj: object): object => {
-    return Object.fromEntries(Object.entries(obj).filter(([_, v]) => v != null));
+    return Object.fromEntries(Object.entries(obj).filter(([_, v]) => v != null && v != ''));
   };
 }
 

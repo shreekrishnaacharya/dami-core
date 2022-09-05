@@ -2,6 +2,7 @@ import Dami from '../app/Dami';
 import Actions from '../migration/models/Actions';
 import { camelToText } from './TextHelper';
 import CTypes from '../config/ConfigTypes'
+import ListModel from './ListModel';
 enum CListType {
   NAME = 'name',
   ACTION = 'action',
@@ -24,7 +25,7 @@ export async function initRbac() {
     }
   }
   const actionModel = new Actions();
-  const result = await actionModel.asObject().findAll();
+  const result = <ListModel<any>>await actionModel.asObject().findAll();
   const insert = [];
   const update = [];
   for (const { id, name, action, method } of result) {

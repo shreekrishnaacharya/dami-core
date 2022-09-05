@@ -18,7 +18,7 @@ class Role extends ActiveRecords {
     };
   };
 
-  afterSave(type: string): void {
+  async afterSave(type: string) {
     if (type === Query.INSERT) {
       const action = new Actions();
       action
@@ -34,6 +34,7 @@ class Role extends ActiveRecords {
         })
         .findAll();
     }
+    return true
   }
 }
 export default Role;

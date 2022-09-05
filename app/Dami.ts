@@ -3,7 +3,7 @@ import DamiCache from '../helpers/DamiCache';
 import MiddleWare from './MiddleWare';
 import * as _path from 'path';
 import CType from "../config/ConfigTypes"
-import { IDatabase, IPubdirConfig, IUserConfig } from "../config/IConfig"
+import { IDatabase, IPubdirConfig, IUserConfig, IUserConfigList } from "../config/IConfig"
 import Mysql from '../db/mysql';
 
 class Dami {
@@ -13,7 +13,7 @@ class Dami {
   static dbConfig: IDatabase;
   static db: Mysql = null;
   static baseUrl: string;
-  static loginUser: IUserConfig;
+  static loginUser: IUserConfig | IUserConfigList;
   static enableRbac: boolean;
   private static store: DamiCache;
   private static _dirname: string;
@@ -31,7 +31,7 @@ class Dami {
     if (config[CType.BASE_PATH].length === 0) {
       throw new Error('basePath config not setup!');
     }
-    this.authTokens = new DamiCache({ ttl: this.loginUser.refreshInactive });
+    this.authTokens = new DamiCache({ ttl: this.loginUser.refreshInactive ? this.loginUser.refreshInactive : this.loginUser[0].refreshInactive });
     this.store = new DamiCache();
     this._dirname = _path.resolve(_path.dirname('')) + '/' + config[CType.BASE_PATH] + '/';
   }
@@ -47,8 +47,11 @@ class Dami {
   static rbac = (userModel, route): boolean => {
     return this.enableRbac ? false : true;
   };
-  static set(key: string, value: any) {
-    this.store.set(key, value);
+  static set(key: string, value: any, config?: {
+    ttl?: number;
+    expireOn?: number;
+  }) {
+    this.store.set(key, value, config);
   }
   static has(key: string) {
     return this.store.has(key);
@@ -92,12 +95,12 @@ class Dami {
     const { uid, sessionid } = this.parseJwt(value);
     if (this.loginUser.uniqueSession) {
       if (this.authTokens.has(uid)) {
-        this.authTokens.config(uid, { ttl: this.loginUser.refreshInactive });
+        this.authTokens.config(uid, { ttl: this.loginUser.refreshInactive ? this.loginUser.refreshInactive : this.loginUser[0].refreshInactive });
         return true;
       }
     } else {
       if (this.authTokens.has(sessionid)) {
-        this.authTokens.config(sessionid, { ttl: this.loginUser.refreshInactive });
+        this.authTokens.config(sessionid, { ttl: this.loginUser.refreshInactive ? this.loginUser.refreshInactive : this.loginUser[0].refreshInactive });
         return true;
       }
     }

@@ -11,10 +11,10 @@ abstract class Controller<Model> extends BaseController<Model> {
     super(model);
   }
 
-  /*
-          @Index action
-          this action list the data
-      */
+  /**          
+   *  @Index action
+   *  this action list the data
+   */
   index = async (req: Request, res: Response, next: NextFunction) => {
     const model = this.getModelExtend();
     const dataProvider = new DataProvider({ request: req, response: res });
@@ -29,7 +29,7 @@ abstract class Controller<Model> extends BaseController<Model> {
     next();
   };
 
-  /*
+  /**
           @Create action
           this action create the data
           ----------------------------
@@ -72,22 +72,22 @@ abstract class Controller<Model> extends BaseController<Model> {
     next();
   };
 
-  /*
-      @View action
-      this action view the data
-      ----------------------------
-      this can also be use as follow
-  
-      ```
-      this.getModelExtend().onResult((model) => {
-          if (model === null) {
-              return res.send("not found");
-          }else{
-              // return not found status
-              res.status(HttpCode.NOT_FOUND).send({}); 
-          }
-      }).asModel().findOne(req.params.id);
-      ```
+  /**
+    *  @View action
+    *  this action view the data
+    *  ----------------------------
+    *  this can also be use as follow
+    * 
+    *  ```
+    *  this.getModelExtend().onResult((model) => {
+    *      if (model === null) {
+    *          return res.send("not found");
+    *      }else{
+    *          // return not found status
+    *          res.status(HttpCode.NOT_FOUND).send({}); 
+    *      }
+    *  }).asModel().findOne(req.params.id);
+    *  ```
   */
   view = async (req: Request, res: Response, next: NextFunction) => {
     const model = this.getModelExtend();

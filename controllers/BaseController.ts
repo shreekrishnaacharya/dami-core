@@ -14,11 +14,19 @@ abstract class BaseController<Model> implements IController {
   constructor(model?: any) {
     this.model = model;
   }
-  // path to current controller
+  /**
+    * set path to current controller
+    *  */
   setPath(path: string) {
     this.path = path;
   }
 
+  /**
+   * get path to current controller
+   *  */
+  getPath() {
+    return this.path;
+  }
   /*
         @Route function
         this function holds the defination for routes for actions in controllers

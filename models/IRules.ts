@@ -14,6 +14,7 @@ enum RuleType {
   EQUAL = 'equal',
   PHONE = 'phone'
 }
+
 enum RuleConst {
   ONEOFVALUE = 'oneofvalue',
   RULE = 'rule',
@@ -35,6 +36,8 @@ interface IAttribute {
   [propName: string]: (SingleRule | IRule | IOneof | IPattern | ILength | IMatch | ICallback | string)[];
 }
 type SingleRule = RuleType.STRING | RuleType.NUMBER | RuleType.EMAIL | RuleType.REQUIRED | RuleType.UNIQUE;
+
+const DataType = [RuleType.STRING, RuleType.NUMBER];
 
 const StringRule = [RuleType.STRING, RuleType.NUMBER, RuleType.EMAIL, RuleType.REQUIRED, RuleType.UNIQUE];
 const ObjectRule = [RuleType.MATCH, RuleType.PATTERN, RuleType.CALLBACK, RuleType.LENGTH, RuleType.ONEOF];
@@ -68,4 +71,4 @@ interface IRule {
   rule: SingleRule;
   message: string;
 }
-export { RuleType, RuleConst, IAttRule, IAttList, IAttribute, AllowedRuleList, StringRule, ObjectRule };
+export { RuleType, RuleConst, IAttRule, IAttList, IAttribute, AllowedRuleList, StringRule, ObjectRule, DataType };

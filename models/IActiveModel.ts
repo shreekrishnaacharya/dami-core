@@ -7,6 +7,7 @@ export default interface IActiveModel {
 
   getTable(): string;
   filterAttribute(value: object): object;
+  attributeType(): object;
   validate(): Promise<boolean>;
   hasError(): boolean;
   addError(key: string, message: string): void;

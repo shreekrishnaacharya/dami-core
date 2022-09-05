@@ -21,6 +21,8 @@ import Service from './service/Service';
 import { isEmpty } from './helpers/functions';
 import { Query, Connection } from './models/Connection';
 import MiddleWare from './app/MiddleWare';
+import IMiddleWare from './app/IMiddleWare';
+
 export {
   Connection,
   NextFunction,
@@ -49,4 +51,5 @@ export {
   Dami,
   DamiApp,
   DataProvider,
+  IMiddleWare
 };

@@ -62,8 +62,13 @@ export default class DataProvider {
   getList(): Promise<any> {
     // load query
     const queryAttr = this.model.filterAttribute(this.request.query);
+    const attType = this.model.attributeType();
     for (const nam of Object.keys(queryAttr)) {
-      this.queryModel.andFilterWhere(['like', this.model.getTable() + '.' + nam, queryAttr[nam]]);
+      if (attType[nam] == "string") {
+        this.queryModel.andFilterWhere(['like', this.model.getTable() + '.' + nam, queryAttr[nam]]);
+      } else {
+        this.queryModel.andFilterWhere({ [this.model.getTable() + '.' + nam]: queryAttr[nam] });
+      }
     }
     const promish1 = Connection.mysql.query(this.queryModel.build(true));
     promish1.then((result) => {
@@ -111,8 +116,6 @@ export default class DataProvider {
     }
     if (this.request.query.hasOwnProperty(DPType.PAGE_SIZE)) {
       this.pageSize = parseInt(this.request.query.size.toString(), 10);
-    } else {
-      this.pageSize = this.DEFAULT_PAGE_SIZE;
     }
     if (this.request.query.hasOwnProperty(DPType.PAGE)) {
       this.page = parseInt(this.request.query.page.toString(), 10);

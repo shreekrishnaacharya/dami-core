@@ -21,6 +21,13 @@ const __dirname = _path.dirname(fileURLToPath(import.meta.url));
 class DamiApp {
   static config: object;
   private controllers: object;
+  private app: any
+  constructor() {
+    this.app = express();
+  }
+  getApp() {
+    return this.app;
+  }
   init = (configSetting: object) => {
     Dami.init(configSetting);
     // if (!configSetting.hasOwnProperty('controllers') || configSetting['controllers'] === null) {
@@ -39,8 +46,8 @@ class DamiApp {
     req.user = null;
     next();
   };
-  run = () => {
-    const app = express();
+  run = (initRun: Function = () => { }) => {
+    const app = this.app;
     const track = new LogTrack();
     let count = 0;
     const corsOptions = {
@@ -69,7 +76,7 @@ class DamiApp {
       next();
     });
     app.use(track.start);
-
+    initRun()
     const controllers = this.getControllers(this.controllers);
     for (const contr of controllers) {
       const [control, controller] = contr
@@ -140,7 +147,7 @@ class DamiApp {
       }
       app.use(`/${Cattr.APP_NAME + tmpControl}`, router);
     }
-    app.use(`/${Cattr.APP_NAME}`, express.static(__dirname + "/../migration/resource/client"));
+    app.get(`/${Cattr.APP_NAME}`, express.static(__dirname + "/../migration/resource/client"));
     if (Object.values(Dami.publicDir).length > 0) {
       if (Dami.publicDir.from != undefined) {
         app.use(Dami.publicDir.from, express.static(Dami.publicDir.path));

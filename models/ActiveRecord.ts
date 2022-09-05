@@ -1,6 +1,8 @@
 import { isEmpty } from '../helpers/functions';
+import ListModel from '../helpers/ListModel';
 import ActiveQuery from './ActiveQuery';
-import { IAttList } from './IRules';
+import BaseModel from './BaseModel';
+import { DataType, IAttList, RuleType } from './IRules';
 import { checkRules } from './_validate';
 
 abstract class ActiveRecords extends ActiveQuery {
@@ -50,6 +52,21 @@ abstract class ActiveRecords extends ActiveQuery {
       }
     });
     return val;
+  }
+
+  public attributeType() {
+    const rules = this.rules();
+    const rule = {}
+    Object.keys(rules).forEach(e => {
+      let type = RuleType.STRING;
+      DataType.forEach(f => {
+        if (rules[e].includes(f)) {
+          type = f
+        }
+      })
+      rule[e] = type;
+    })
+    return rule
   }
   /**
    * return all visiable fields on current scenario
@@ -127,7 +144,12 @@ abstract class ActiveRecords extends ActiveQuery {
     const fieldList = {};
     for (const field of Object.keys(fields)) {
       if (typeof fields[field] === 'function') {
-        fieldList[field] = await fields[field](this);
+        const val = await fields[field](this);
+        if (val instanceof ListModel || val instanceof BaseModel) {
+          fieldList[field] = await val.toJson()
+        } else {
+          fieldList[field] = val
+        }
       } else {
         fieldList[field] = this.getValue(fields[field]);
       }

@@ -15,7 +15,9 @@ export interface IUserConfig {
     refreshExpire: string;
     refreshInactive: 0;
 }
-
+export interface IUserConfigList {
+    [key: string]: IUserConfig
+}
 export interface IPubdirConfig {
     from?: string
     path: string

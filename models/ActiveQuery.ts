@@ -205,7 +205,7 @@ class ActiveQuery extends Connection {
    * get list of model
    * @returns array of model or ListModel of model
    */
-  async all(): Promise<ListModel<this | object>> {
+  async all(): Promise<ListModel<this | any>> {
     this.isAll = true;
     return this.pPromise(this.query());
   }
@@ -213,7 +213,7 @@ class ActiveQuery extends Connection {
    * get list of model
    * @returns array of model or ListModel of model
    */
-  async findAll(): Promise<ListModel<this | object>> {
+  async findAll(): Promise<ListModel<this | any>> {
     this.isAll = true;
     this.createCommand(
       new QueryBuild().select(this.getSelectAs()).from(this.tableName).doLeftJoin(this.joinOne).build(),
@@ -328,10 +328,9 @@ class ActiveQuery extends Connection {
     return this.getAtt(result);
   }
 
-  private getAtt(result: any) {
+  private async getAtt(result: any) {
     if (this.queryType === Query.DELETE) {
-      this.afterDelete();
-      return result.affectedRows > 0 ? true : false;
+      return await this.afterDelete(result.affectedRows > 0 ? true : false);
     } else if (this.queryType === Query.UPDATE) {
       if (result.affectedRows === 0) {
         return false;
@@ -340,8 +339,7 @@ class ActiveQuery extends Connection {
       // this.load({ id: this.primaryKey, ...this.getAttributes() });
       this.isEmpty = false;
       this.isNew = false;
-      this.afterSave(Query.UPDATE);
-      return true;
+      return this.afterSave(Query.UPDATE);
     } else if (this.queryType === Query.INSERT) {
       if (!result.hasOwnProperty('insertId')) {
         return false;
@@ -351,7 +349,7 @@ class ActiveQuery extends Connection {
       this.load({ id: this.primaryKey, ...this.getAttributes() });
       this.isEmpty = false;
       this.isNew = false;
-      this.afterSave(Query.INSERT);
+      await this.afterSave(Query.INSERT);
       return true;
     }
     if (result.length === 0) {

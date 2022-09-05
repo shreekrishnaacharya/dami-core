@@ -18,6 +18,9 @@ const appConfig = {
   baseUrl: '',
   basePath: 'storage',
   path: {},
+  initAction: (): void => {
+
+  },
   requiredLogin: (): boolean | string[] => {
     return false;
   },

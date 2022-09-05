@@ -7,6 +7,12 @@ class GuestUser extends ActiveRecords implements IAuth {
     super('');
     this.load({ username: 'Guest User' });
   }
+  rules = () => {
+    return {
+      "username": ["string"]
+    }
+  }
+
   signToken: () => string;
   refreshToken: () => string;
   validatePassword: (password: string) => boolean;

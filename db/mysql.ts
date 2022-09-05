@@ -19,7 +19,7 @@ class Mysql {
     } else {
       sql = mysql.format(sqlQuery[0], [...sqlQuery[1]])
     }
-    console.log(sql)
+    console.log(sql, "query")
     return new Promise((resolve, reject) => {
       this.con.getConnection((err1: Error, connection) => {
         if (err1) throw err1;
@@ -75,6 +75,7 @@ class Mysql {
   };
 
   insert = (sql: string, records, callback?): Promise<any> => {
+    console.log(sql, 'insert')
     return new Promise((resolve, reject) => {
       this.con.getConnection((err1: Error, connection) => {
         if (err1) throw err1;

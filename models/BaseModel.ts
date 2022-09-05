@@ -24,6 +24,7 @@ abstract class BaseModel implements IActiveModel {
   constructor() {
   }
 
+
   protected init() {
     const attributes = this.rules();
     this._validate = {};
@@ -81,6 +82,9 @@ abstract class BaseModel implements IActiveModel {
     throw new Error('Method not implemented.');
   }
   setBuild(build: QueryBuild): this {
+    throw new Error('Method not implemented.');
+  }
+  attributeType(): object {
     throw new Error('Method not implemented.');
   }
   toList(flag: boolean): IActiveModel {
@@ -158,9 +162,9 @@ abstract class BaseModel implements IActiveModel {
   }
 
   protected async beforeSave(type: string): Promise<Boolean> { return Promise.resolve(true) }
-  protected afterSave(type: string) { }
+  protected afterSave(type: string): Promise<Boolean> { return Promise.resolve(true) }
   protected async beforeDelete(): Promise<Boolean> { return Promise.resolve(true) }
-  protected afterDelete() { }
+  protected afterDelete(flag: Boolean): Promise<Boolean> { return Promise.resolve(flag) }
   protected getModal(callBack: (e: IActiveModel) => any) {
     return callBack(this);
   }
