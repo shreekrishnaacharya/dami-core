@@ -116,13 +116,11 @@ class QueryBuild {
     if (typeof condition === 'string') {
       this.conditionQuery.push({ type: 'AND', format: 'string', condition });
     } else if (Array.isArray(condition)) {
-      console.log(condition, 'array')
       if (!isEmpty(condition[2])) {
         this.conditionQuery.push({ type: 'AND', format: 'array', condition });
       }
     } else {
       const con = this.removeEmpty(condition)
-      console.log(condition, 'obj')
       if (Object.keys(con).length > 0) {
         this.conditionQuery.push({ type: 'AND', format: 'object', condition });
       }

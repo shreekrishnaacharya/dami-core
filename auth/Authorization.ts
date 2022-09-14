@@ -4,7 +4,6 @@ import BaseController from '../controllers/BaseController';
 import IMiddleWare from '../app/IMiddleWare';
 import HttpCode from '../helpers/HttpCode';
 import HttpHead from '../helpers/HttpHead';
-import GuestUser from './GuestUser';
 class Authorization extends MiddleWare implements IMiddleWare {
   controller: BaseController<any>;
   constructor(controller: BaseController<any>) {
@@ -17,16 +16,14 @@ class Authorization extends MiddleWare implements IMiddleWare {
 
   protected auth = async (req, res, next) => {
     const guardActions: string[] | boolean = this.controller.requiredLogin();
-
-    console.log(this.controller.getPath())
-    let userModel = new GuestUser();
+    let userModel = null;
     if ("authUser" in Dami.loginUser) {
       userModel = new Dami.loginUser.authUser();
     } else {
       const cpath = this.controller.getPath();
       let kpath = null;
       Object.keys(Dami.loginUser).forEach(e => {
-        if (kpath == null && cpath.startsWith(e)) {
+        if (cpath.startsWith(e)) {
           kpath = e
         }
       });

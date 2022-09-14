@@ -28,6 +28,7 @@ class LogTrack {
   start = (req, res, next) => {
     // this.logId = Math.floor(Math.random() * 10000);
     // console.log("Start tracking request id : " + this.logId);
+    // req.counter = Math.floor(Math.random() * 10000)
     const currentDate = new Date();
     req.startTime = currentDate.getTime();
     this.queryList = [];

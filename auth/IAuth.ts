@@ -1,3 +1,5 @@
+import { _IUserConfig } from "../config/IConfig";
+
 interface IAuth {
   validatePassword: (password: string) => boolean;
   hashPassword: (passowrd: string) => string;
@@ -8,6 +10,7 @@ interface IAuth {
   signToken: (refreshToken: string) => string;
   refreshToken: () => string;
   findByAuthKey: (authkey: string) => Promise<any>;
+  getConfig: () => _IUserConfig
 }
 
 export default IAuth;

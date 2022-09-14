@@ -28,6 +28,9 @@ class DamiApp {
   getApp() {
     return this.app;
   }
+  getExpress() {
+    return express;
+  }
   init = (configSetting: object) => {
     Dami.init(configSetting);
     // if (!configSetting.hasOwnProperty('controllers') || configSetting['controllers'] === null) {
@@ -70,11 +73,18 @@ class DamiApp {
     );
     app.use(this.configReq);
     app.use((req, res, next) => {
+      // req.counter = Math.floor(Math.random() * 10000)
       count++;
-      // console.log(req.originalUrl)
+      // req.counter = count
+      // console.log("Counter : " + count)
       // console.log(Dami.authTokens);
       next();
     });
+
+    // app.use((req, res, next) => {
+    //   console.log("1 Counter : " + count + " Req :" + req.counter)
+    //   next();
+    // });
     app.use(track.start);
     initRun()
     const controllers = this.getControllers(this.controllers);
@@ -106,11 +116,29 @@ class DamiApp {
         }
       }
       app.use(`/${control}`, router);
+
+      /**
+       * after action
+       */
       for (const aa of controller.afterAction()) {
         const middle = new aa(controller);
         app.use(`/${control}`, middle.run);
       }
     }
+    // app.use((req, res, next) => {
+    //   setTimeout(() => console.log("2 Counter : " + count + " Req :" + req.counter), 100)
+    //   next();
+    // });
+    // app.use((req, res, next) => {
+    //   console.log(process)
+    //   setTimeout(() => {
+    //     next();
+    //   }, 5000)
+    // });
+
+    /**
+     * this is where dami auto code generator is register
+     */
     app.use(`/${Cattr.APP_NAME}`, (req, res, next) => {
       if (Object.keys(Dami.dbConfig).length === 0) {
         res.status(HttpCode.BAD_GATEWAY).send('Db not configured').end();
@@ -158,6 +186,11 @@ class DamiApp {
     app.use(track.memory);
     app.use(track.time);
     app.use(track.end);
+    // app.use((req, res, next) => {
+    //   console.log("3 Counter : " + count + " Req :" + req.counter)
+    //   next()
+    // });
+
     app.listen(Dami.port, () => console.log(`Your app listening on port ${Dami.port}!`));
   };
 

@@ -3,9 +3,8 @@ import DamiCache from '../helpers/DamiCache';
 import MiddleWare from './MiddleWare';
 import * as _path from 'path';
 import CType from "../config/ConfigTypes"
-import { IDatabase, IPubdirConfig, IUserConfig, IUserConfigList } from "../config/IConfig"
+import { IDatabase, IPubdirConfig, IUserConfig, IUserConfigList, _IUserConfig } from "../config/IConfig"
 import Mysql from '../db/mysql';
-
 class Dami {
   static config: object;
   static port: number;
@@ -19,6 +18,15 @@ class Dami {
   private static _dirname: string;
   static authTokens: DamiCache;
 
+
+  // setUser(userModel) {
+  //   const rq = domain.create();
+  //   rq.add(userModel)
+  //   rq["_user"] = userModel
+  // }
+  // getUser() {
+  // }
+
   static init(configSetting: object) {
     const config = {
       ...appConfig,
@@ -31,7 +39,7 @@ class Dami {
     if (config[CType.BASE_PATH].length === 0) {
       throw new Error('basePath config not setup!');
     }
-    this.authTokens = new DamiCache({ ttl: this.loginUser.refreshInactive ? this.loginUser.refreshInactive : this.loginUser[0].refreshInactive });
+    this.authTokens = new DamiCache();
     this.store = new DamiCache();
     this._dirname = _path.resolve(_path.dirname('')) + '/' + config[CType.BASE_PATH] + '/';
   }
@@ -82,35 +90,35 @@ class Dami {
     }
     throw new Error(`Path '${path}' not set`);
   }
-  static setAuth(token: string) {
+  static setAuth(token: string, config: _IUserConfig) {
     const { uid, sessionid, exp } = this.parseJwt(token);
     if (this.loginUser.uniqueSession) {
-      this.authTokens.set(uid, token, { expireOn: exp });
+      this.authTokens.set(uid, token, { ttl: config.refreshInactive, expireOn: exp });
     } else {
       this.authTokens.set(sessionid, token, { expireOn: exp });
     }
   }
 
-  static hasAuth(value: string) {
+  static hasAuth(value: string, config: _IUserConfig) {
     const { uid, sessionid } = this.parseJwt(value);
     if (this.loginUser.uniqueSession) {
       if (this.authTokens.has(uid)) {
-        this.authTokens.config(uid, { ttl: this.loginUser.refreshInactive ? this.loginUser.refreshInactive : this.loginUser[0].refreshInactive });
+        this.authTokens.config(uid, { ttl: config.refreshInactive });
         return true;
       }
     } else {
       if (this.authTokens.has(sessionid)) {
-        this.authTokens.config(sessionid, { ttl: this.loginUser.refreshInactive ? this.loginUser.refreshInactive : this.loginUser[0].refreshInactive });
+        this.authTokens.config(sessionid, { ttl: config.refreshInactive });
         return true;
       }
     }
     return false;
   }
 
-  static deleteAuth(value: string) {
+  static deleteAuth(value: string, config: _IUserConfig) {
     const { uid, sessionid } = this.parseJwt(value);
 
-    if (this.loginUser.uniqueSession) {
+    if (config.uniqueSession) {
       return this.authTokens.del(uid);
     } else {
       return this.authTokens.del(sessionid);

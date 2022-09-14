@@ -1,3 +1,4 @@
+import { _IUserConfig } from '../config/IConfig';
 import ActiveRecords from '../models/ActiveRecord';
 import IAuth from './IAuth';
 
@@ -7,6 +8,7 @@ class GuestUser extends ActiveRecords implements IAuth {
     super('');
     this.load({ username: 'Guest User' });
   }
+
   rules = () => {
     return {
       "username": ["string"]
@@ -22,6 +24,7 @@ class GuestUser extends ActiveRecords implements IAuth {
   findUser: (username: string) => any;
   findById: (id: number) => any;
   findByAuthKey: (token: string) => any;
+  getConfig: () => _IUserConfig;
 }
 
 export default GuestUser;

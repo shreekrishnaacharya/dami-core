@@ -177,27 +177,34 @@ abstract class BaseModel implements IActiveModel {
     return `_${this.tableName}_id`;
   }
   protected getMyRow(row: object, isModal?: boolean) {
+    let hasValue = false
     if (isModal) {
       this._attributeName.forEach((name) => {
         if (row.hasOwnProperty(`_${this.tableName}_${name}`)) {
           this._attributes[name] = row[`_${this.tableName}_${name}`];
           this[name] = this._attributes[name];
           this.isEmpty = false;
+          if (row[`_${this.tableName}_${name}`] != null) {
+            hasValue = true
+          }
         }
       });
       this._oldAttributes = { ...this._attributes };
-      return this;
+      return hasValue ? this : null;
     }
     const result = {};
     if (row === null) {
-      return {};
+      return null;
     }
     this._attributeName.forEach((name) => {
       if (row.hasOwnProperty(`_${this.tableName}_${name}`)) {
         result[name] = row[`_${this.tableName}_${name}`];
+        if (row[`_${this.tableName}_${name}`] != null) {
+          hasValue = true
+        }
       }
     });
-    return result;
+    return hasValue ? result : null;
   }
   reset() {
     return Object.assign(this, new this.constructor());

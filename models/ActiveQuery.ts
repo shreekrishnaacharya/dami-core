@@ -386,8 +386,8 @@ class ActiveQuery extends Connection {
         model.scenario = this.scenario;
         model.getMyRow(ky, true);
         for (const [name, mod] of this.joinOne) {
-          model[name] = new mod();
-          model[name].getMyRow(ky, true)
+          const m = new mod()
+          model[name] = m.getMyRow(ky, true)
         }
         output.push(model);
       }

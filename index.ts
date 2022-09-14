@@ -13,7 +13,7 @@ import Dami from './app/Dami';
 import DamiApp from './app/DamiApp';
 import IAuth from './auth/IAuth';
 import DataProvider from './helpers/DataProvider';
-import { UserToken, IUserToken } from './helpers/UserToken';
+// import { UserToken, IUserToken } from './helpers/UserToken';
 import Authorization from './auth/Authorization';
 import FileHelper from './helpers/FileHelper';
 import Url from './helpers/Url';
@@ -22,8 +22,10 @@ import { isEmpty } from './helpers/functions';
 import { Query, Connection } from './models/Connection';
 import MiddleWare from './app/MiddleWare';
 import IMiddleWare from './app/IMiddleWare';
+import { _IUserConfig } from './config/IConfig'
 
 export {
+  _IUserConfig,
   Connection,
   NextFunction,
   Request,
@@ -43,8 +45,8 @@ export {
   QueryBuild,
   ListModel,
   DamiCache,
-  UserToken,
-  IUserToken,
+  // UserToken,
+  // IUserToken,
   RbacController,
   IAuth,
   HttpCode,

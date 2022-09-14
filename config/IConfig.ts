@@ -9,11 +9,19 @@ export interface IDatabase {
 export interface IUserConfig {
     authUser: any;
     uniqueSession: boolean;
-    authToken: string;
+    authSalt: string;
     authExpire: number;
-    refreshToken: string;
+    refreshSalt: string;
     refreshExpire: string;
-    refreshInactive: 0;
+    refreshInactive: number;
+}
+export interface _IUserConfig {
+    uniqueSession: boolean;
+    authSalt: string;
+    authExpire: number;
+    refreshSalt: string;
+    refreshExpire: string;
+    refreshInactive: number;
 }
 export interface IUserConfigList {
     [key: string]: IUserConfig
