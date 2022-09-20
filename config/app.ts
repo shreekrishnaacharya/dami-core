@@ -1,18 +1,12 @@
 import IMiddleWare from '../app/IMiddleWare';
 import GuestUser from '../auth/GuestUser';
-import { IDatabase, IPubdirConfig } from './IConfig';
+import { IDamiConfig, IDatabase, IPubdirConfig } from './IConfig';
 
 
-const appConfig = {
+const appConfig: IDamiConfig = {
   port: 3000,
   loginUser: {
-    authToken: 'ASnd$j12sa@kaKJQ32WkASn232Ajhw1123ASsak32',
-    uniqueSession: true,
     authUser: GuestUser,
-    authExpire: 3000, // in seconds
-    refreshToken: 'ASnd$j12sa@kaKJQ32WkASn232Ajhw1123ASsak32',
-    refreshExpire: '1y',
-    refreshInactive: 0,
   },
   publicDir: { path: 'public' } as IPubdirConfig,
   baseUrl: '',
