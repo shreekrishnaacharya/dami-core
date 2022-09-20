@@ -16,7 +16,7 @@ class GuestUser extends ActiveRecords implements IAuth {
   }
 
   signToken: () => string;
-  refreshToken: () => string;
+  getRefreshToken: () => string;
   validatePassword: (password: string) => boolean;
   hashPassword: (passowrd: string) => string;
   validateToken: (token: string) => boolean;

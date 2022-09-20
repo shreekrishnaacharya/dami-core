@@ -22,10 +22,11 @@ import { isEmpty } from './helpers/functions';
 import { Query, Connection } from './models/Connection';
 import MiddleWare from './app/MiddleWare';
 import IMiddleWare from './app/IMiddleWare';
-import { _IUserConfig } from './config/IConfig'
+import { _IUserConfig, IDamiConfig } from './config/IConfig'
 
 export {
   _IUserConfig,
+  IDamiConfig,
   Connection,
   NextFunction,
   Request,

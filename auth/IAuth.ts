@@ -8,7 +8,7 @@ interface IAuth {
   findUser: (username: string) => Promise<any>;
   findById: (id: number) => Promise<any>;
   signToken: (refreshToken: string) => string;
-  refreshToken: () => string;
+  getRefreshToken: () => string;
   findByAuthKey: (authkey: string) => Promise<any>;
   getConfig: () => _IUserConfig
 }

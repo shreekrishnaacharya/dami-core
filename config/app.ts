@@ -4,6 +4,7 @@ import { IDamiConfig, IDatabase, IPubdirConfig } from './IConfig';
 
 
 const appConfig: IDamiConfig = {
+  production: true,
   port: 3000,
   loginUser: {
     authUser: GuestUser,

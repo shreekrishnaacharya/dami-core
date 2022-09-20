@@ -3,16 +3,17 @@ import DamiCache from '../helpers/DamiCache';
 import MiddleWare from './MiddleWare';
 import * as _path from 'path';
 import CType from "../config/ConfigTypes"
-import { IDatabase, IPubdirConfig, IUserConfig, IUserConfigList, _IUserConfig } from "../config/IConfig"
+import { IDatabase, IPubdirConfig, IUserAuth, IUserAuthList, _IUserConfig, IDamiConfig } from "../config/IConfig"
 import Mysql from '../db/mysql';
+import IAuth from '../auth/IAuth';
 class Dami {
-  static config: object;
+  static config: IDamiConfig;
   static port: number;
   static publicDir: IPubdirConfig;
   static dbConfig: IDatabase;
   static db: Mysql = null;
   static baseUrl: string;
-  static loginUser: IUserConfig | IUserConfigList;
+  static loginUser: IUserAuth | IUserAuthList;
   static enableRbac: boolean;
   private static store: DamiCache;
   private static _dirname: string;
@@ -27,7 +28,7 @@ class Dami {
   // getUser() {
   // }
 
-  static init(configSetting: object) {
+  static init(configSetting: IDamiConfig) {
     const config = {
       ...appConfig,
       ...configSetting,
@@ -90,18 +91,21 @@ class Dami {
     }
     throw new Error(`Path '${path}' not set`);
   }
-  static setAuth(token: string, config: _IUserConfig) {
+  static setAuth(authModel: IAuth) {
+    const token = authModel.getRefreshToken();
+    const config = authModel.getConfig();
     const { uid, sessionid, exp } = this.parseJwt(token);
-    if (this.loginUser.uniqueSession) {
+    if (config.uniqueSession) {
       this.authTokens.set(uid, token, { ttl: config.refreshInactive, expireOn: exp });
     } else {
       this.authTokens.set(sessionid, token, { expireOn: exp });
     }
   }
 
-  static hasAuth(value: string, config: _IUserConfig) {
+  static hasAuth(value: string, authUser: IAuth) {
     const { uid, sessionid } = this.parseJwt(value);
-    if (this.loginUser.uniqueSession) {
+    const config = authUser.getConfig()
+    if (config.uniqueSession) {
       if (this.authTokens.has(uid)) {
         this.authTokens.config(uid, { ttl: config.refreshInactive });
         return true;

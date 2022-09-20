@@ -15,6 +15,7 @@ import Cattr from "../config/ConfigTypes"
 import * as _path from 'path';
 import { fileURLToPath } from 'url';
 import Controller from '../controllers/Controller';
+import { IDamiConfig } from '../config/IConfig';
 
 const __dirname = _path.dirname(fileURLToPath(import.meta.url));
 
@@ -31,7 +32,7 @@ class DamiApp {
   getExpress() {
     return express;
   }
-  init = (configSetting: object) => {
+  init = (configSetting: IDamiConfig) => {
     Dami.init(configSetting);
     // if (!configSetting.hasOwnProperty('controllers') || configSetting['controllers'] === null) {
     //     throw new Error('Controllers not set in config file')

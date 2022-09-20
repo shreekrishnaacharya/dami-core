@@ -24,26 +24,32 @@ export interface _IUserConfig {
 export interface IUserAuthList {
     [key: string]: IUserAuth
 }
+
+export interface IControllerList {
+    [key: string]: IController | IControllerList
+}
+
 export interface IPubdirConfig {
     from?: string
     path: string
 }
 
-interface IRbacFunc {
+export interface IRbacFunc {
     (user: IAuth, path: string): boolean;
 }
 
-interface IActionFunc {
-    (): IMiddleWare[];
+export interface IActionFunc {
+    (): any[];
 }
 
-interface IRequiredLoginFunc {
+export interface IRequiredLoginFunc {
     (): boolean | string[]
 }
 
 export interface IDamiConfig {
+    production: boolean
     port: number
-    controllers: IController
+    controllers: IControllerList
     baseUrl: string
     loginUser?: IUserAuthList | IUserAuth
     publicDir?: IPubdirConfig
