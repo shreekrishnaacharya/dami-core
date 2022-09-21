@@ -8,7 +8,7 @@ import IController from './IController';
 import IAuth from '../auth/IAuth';
 abstract class BaseController<Model> implements IController {
   private model: any;
-  protected appConfigobject;
+  // protected appConfigobject;
   protected path: string;
 
   constructor(model?: any) {
@@ -27,7 +27,7 @@ abstract class BaseController<Model> implements IController {
   getPath() {
     return this.path;
   }
-  /*
+  /**
         @Route function
         this function holds the defination for routes for actions in controllers
         ----------------------------
@@ -69,12 +69,16 @@ abstract class BaseController<Model> implements IController {
     return this.rbac(userModel, route);
   }
 
-  // list action that required login
+  /**  
+   * list action that required login
+   * */
   requiredLogin = (): boolean | string[] => {
     return Dami.requiredLogin();
   };
 
-  // method that get current action name
+  /**  
+   * method that get current action name
+   * */
   getActionName(req) {
     const urloriginal = req.originalUrl.replace(req._parsedUrl.search, '');
     for (const rout of this.route()) {
@@ -85,12 +89,16 @@ abstract class BaseController<Model> implements IController {
     return null;
   }
 
-  // list of middleware that run before any action
+  /**  
+   *  list of middleware that run before any action
+   * */
   beforeAction = (): MiddleWare[] => {
     return Dami.beforeAction();
   };
 
-  // list of middleware that run after action
+  /**  
+   *  list of middleware that run after action
+   * */
   afterAction = (): MiddleWare[] => {
     return Dami.afterAction();
   };

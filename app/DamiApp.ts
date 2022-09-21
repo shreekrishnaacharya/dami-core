@@ -50,7 +50,7 @@ class DamiApp {
     req.user = null;
     next();
   };
-  run = (initRun: Function = () => { }) => {
+  run = (initRun?: (app: any) => {}) => {
     const app = this.app;
     const track = new LogTrack();
     let count = 0;
@@ -72,6 +72,9 @@ class DamiApp {
         useTempFiles: true,
       }),
     );
+    if ('viewEngine' in Dami.config) {
+      app.set('view engine', Dami.config.viewEngine);
+    }
     app.use(this.configReq);
     app.use((req, res, next) => {
       // req.counter = Math.floor(Math.random() * 10000)
@@ -87,7 +90,9 @@ class DamiApp {
     //   next();
     // });
     app.use(track.start);
-    initRun()
+    if (initRun) {
+      initRun(app)
+    }
     const controllers = this.getControllers(this.controllers);
     for (const contr of controllers) {
       const [control, controller] = contr

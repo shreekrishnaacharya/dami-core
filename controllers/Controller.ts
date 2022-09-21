@@ -1,11 +1,12 @@
 import { NextFunction, Request, Response } from 'express';
 import DataProvider from '../helpers/DataProvider';
 import HttpCode from '../helpers/HttpCode';
+import ActiveRecords from '../models/ActiveRecord';
 import BaseController from './BaseController';
 import Methods from './Methods';
 import { IRoute } from './Route';
 
-abstract class Controller<Model> extends BaseController<Model> {
+abstract class Controller<Model extends ActiveRecords> extends BaseController<Model> {
   // model:any;
   constructor(model?: any) {
     super(model);

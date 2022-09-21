@@ -6,6 +6,9 @@ import CType from "../config/ConfigTypes"
 import { IDatabase, IPubdirConfig, IUserAuth, IUserAuthList, _IUserConfig, IDamiConfig } from "../config/IConfig"
 import Mysql from '../db/mysql';
 import IAuth from '../auth/IAuth';
+const damiVar = [
+  'port', 'publicDir', 'dbConfig', 'baseUrl'
+]
 class Dami {
   static config: IDamiConfig;
   static port: number;
@@ -18,23 +21,22 @@ class Dami {
   private static store: DamiCache;
   private static _dirname: string;
   static authTokens: DamiCache;
-
-
-  // setUser(userModel) {
-  //   const rq = domain.create();
-  //   rq.add(userModel)
-  //   rq["_user"] = userModel
-  // }
-  // getUser() {
-  // }
+  [x: string]: any;
 
   static init(configSetting: IDamiConfig) {
     const config = {
       ...appConfig,
       ...configSetting,
     };
-    for (const conf of Object.keys(config)) {
-      this[conf] = config[conf];
+    for (const conf of damiVar) {
+      if (conf in config) {
+        this[conf] = config[conf];
+      }
+    }
+    if ('damiList' in config) {
+      for (const dl of Object.keys(config.damiList)) {
+        this[dl] = config.damiList[dl];
+      }
     }
     Dami.config = config;
     if (config[CType.BASE_PATH].length === 0) {

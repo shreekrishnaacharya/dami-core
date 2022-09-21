@@ -2,7 +2,6 @@ import IMiddleWare from '../app/IMiddleWare';
 import GuestUser from '../auth/GuestUser';
 import { IDamiConfig, IDatabase, IPubdirConfig } from './IConfig';
 
-
 const appConfig: IDamiConfig = {
   production: true,
   port: 3000,

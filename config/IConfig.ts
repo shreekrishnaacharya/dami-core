@@ -1,4 +1,3 @@
-import IMiddleWare from "../app/IMiddleWare";
 import IAuth from "../auth/IAuth";
 import IController from "../controllers/IController";
 
@@ -9,7 +8,6 @@ export interface IDatabase {
     password: string,
     database: string
 }
-
 export interface IUserAuth {
     authUser: any;
 }
@@ -46,11 +44,17 @@ export interface IRequiredLoginFunc {
     (): boolean | string[]
 }
 
+export interface IDamiList {
+    [key: string]: object
+}
+
 export interface IDamiConfig {
     production: boolean
     port: number
     controllers: IControllerList
     baseUrl: string
+    viewEngine?: string,
+    damiList?: IDamiList
     loginUser?: IUserAuthList | IUserAuth
     publicDir?: IPubdirConfig
     basePath?: string

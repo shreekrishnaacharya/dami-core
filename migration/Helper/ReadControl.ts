@@ -37,7 +37,6 @@ class ReadControl {
       const filePath = cPath.replace('@app\\', '').replace(/\\/g, '/');
 
       let model = fs.readFileSync(__dirname + '/../resource/template/controller_control.txt', 'utf8');
-      console.log(model);
       model = model.replace(new RegExp('{{@controllerName}}', 'g'), cName);
 
       if (!isCreate) {
