@@ -35,7 +35,7 @@ class Dami {
     }
     if ('damiList' in config) {
       for (const dl of Object.keys(config.damiList)) {
-        this[dl] = config.damiList[dl];
+        Dami[dl] = config.damiList[dl];
       }
     }
     Dami.config = config;
