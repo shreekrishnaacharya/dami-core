@@ -31,8 +31,11 @@ class Authorization extends MiddleWare implements IMiddleWare {
         userModel = new Dami.loginUser[kpath].authUser()
       }
     }
-    // check if we need to protect the action form access.
-    // if not let user visit action
+    console.log(guardActions, "ga")
+    /**  
+     * check if we need to protect the action form access.
+     * if not let user visit action
+     */
     if (typeof guardActions === 'boolean') {
       if (!guardActions) {
         return next();
@@ -50,7 +53,9 @@ class Authorization extends MiddleWare implements IMiddleWare {
       }
     }
 
-    // check if current action required login
+    /**
+     * check if current action required login
+     */
     const bearerHeader = req.headers[HttpHead.AUTHORIZATION];
     if (typeof bearerHeader === 'undefined') {
       // when token is not set on header
@@ -72,6 +77,7 @@ class Authorization extends MiddleWare implements IMiddleWare {
     }
     // set auth-token
     // res.headers["auth-token"] = bearerToken;
+    console.log(model, 'user')
     req.user = model;
     req.authToken = bearerHeader;
     req.authJson = jwtJson;
