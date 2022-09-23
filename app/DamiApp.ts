@@ -101,7 +101,6 @@ class DamiApp {
       const routList = controller.route();
       for (const ba of controller.beforeAction()) {
         const middle = new ba(controller);
-        console.log(middle)
         app.use(`/${control}`, middle.run);
       }
       for (const { method, path, action } of routList) {

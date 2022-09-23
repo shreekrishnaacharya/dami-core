@@ -31,7 +31,7 @@ class Authorization extends MiddleWare implements IMiddleWare {
         userModel = new Dami.loginUser[kpath].authUser()
       }
     }
-    console.log(guardActions, "ga")
+    // console.log(guardActions,userModel, 'ga')
     /**  
      * check if we need to protect the action form access.
      * if not let user visit action
@@ -63,6 +63,8 @@ class Authorization extends MiddleWare implements IMiddleWare {
     }
     // get token by spliting bearer and token
     const bearerToken = bearerHeader.split(' ')[1];
+
+
     // decode the token to verify user
     if (!userModel.validateToken(bearerToken)) {
       return res.status(HttpCode.UNAUTHORIZED).send('Login required :1003').end();
@@ -77,7 +79,6 @@ class Authorization extends MiddleWare implements IMiddleWare {
     }
     // set auth-token
     // res.headers["auth-token"] = bearerToken;
-    console.log(model, 'user')
     req.user = model;
     req.authToken = bearerHeader;
     req.authJson = jwtJson;

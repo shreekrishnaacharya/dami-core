@@ -7,7 +7,9 @@ import { IDatabase, IPubdirConfig, IUserAuth, IUserAuthList, _IUserConfig, IDami
 import Mysql from '../db/mysql';
 import IAuth from '../auth/IAuth';
 const damiVar = [
-  'port', 'publicDir', 'dbConfig', 'baseUrl'
+  'port', 'publicDir', 'dbConfig',
+  'baseUrl', 'requiredLogin', 'beforeAction',
+  'afterAction', 'rbac', 'loginUser', 'enableRbac'
 ]
 class Dami {
   static config: IDamiConfig;
@@ -107,6 +109,7 @@ class Dami {
   static hasAuth(value: string, authUser: IAuth) {
     const { uid, sessionid } = this.parseJwt(value);
     const config = authUser.getConfig()
+    console.log(this.parseJwt(value), 'sessionid')
     if (config.uniqueSession) {
       if (this.authTokens.has(uid)) {
         this.authTokens.config(uid, { ttl: config.refreshInactive });
