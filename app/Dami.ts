@@ -95,8 +95,7 @@ class Dami {
     }
     throw new Error(`Path '${path}' not set`);
   }
-  static setAuth(authModel: IAuth) {
-    const token = authModel.getRefreshToken();
+  static setAuth(token: string, authModel: IAuth) {
     const config = authModel.getConfig();
     const { uid, sessionid, exp } = this.parseJwt(token);
     if (config.uniqueSession) {
@@ -109,7 +108,6 @@ class Dami {
   static hasAuth(value: string, authUser: IAuth) {
     const { uid, sessionid } = this.parseJwt(value);
     const config = authUser.getConfig()
-    console.log(this.parseJwt(value), 'sessionid')
     if (config.uniqueSession) {
       if (this.authTokens.has(uid)) {
         this.authTokens.config(uid, { ttl: config.refreshInactive });

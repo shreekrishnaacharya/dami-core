@@ -1,11 +1,17 @@
 import * as mysql from 'mysql';
+import { IDatabase } from '../config/IConfig';
+import MyPool from './mypool';
 
 
 type SqlQuery = [string, Array<string | number>];
 class Mysql {
   private con: any;
-  constructor(dbConfig: object) {
-    this.con = mysql.createPool(dbConfig);
+  constructor(dbConfig: IDatabase) {
+    if (dbConfig.dummy === true) {
+      this.con = new MyPool(dbConfig);
+    } else {
+      this.con = mysql.createPool(dbConfig);
+    }
   }
 
   format(query: string, values: Array<string | number>): string {

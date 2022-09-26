@@ -21,6 +21,9 @@ interface DpConfig {
   size?: number;
   page?: number;
 }
+interface QueryLoad {
+  [key: string]: string
+}
 export default class DataProvider {
   private model: IActiveModel;
   private queryModel: QueryBuild;
@@ -56,12 +59,21 @@ export default class DataProvider {
   setModel(model: IActiveModel) {
     this.model = model;
     this.queryModel = model.getBuild();
+    this.load({ ...this.request.query });
     return this;
+  }
+
+  load(query: object, reset?: boolean) {
+    if (reset === true) {
+      this.attributes = this.model.filterAttribute(query);
+    } else {
+      this.attributes = { ...(this.attributes), ...(this.model.filterAttribute(query)) };
+    }
   }
 
   getList(): Promise<any> {
     // load query
-    const queryAttr = this.model.filterAttribute(this.request.query);
+    const queryAttr = { ...(this.attributes) }
     const attType = this.model.attributeType();
     for (const nam of Object.keys(queryAttr)) {
       if (attType[nam] == "string") {
