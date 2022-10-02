@@ -233,7 +233,7 @@ class ActiveQuery extends Connection {
       if (typeof qury != "string") {
         qury = qury.build()
       }
-      assert(this.validateGlue(qury))
+      // assert(this.validateGlue(qury))
       return this.rawQuery(qury).then((res: Array<any>) => {
         resultSet = resultSet.map((rs, i) => {
           const newmod = res.find(e => rs.id == e[this.getMyId()])
@@ -318,7 +318,7 @@ class ActiveQuery extends Connection {
    * @param name : attribute where join model will be available
    * @returns : current model
    */
-  protected hasMany(table: any, condition: object, name: string) {
+  protected hasMany(table: any, condition: object | Function, name: string) {
     this.joinMany.push([name, table, condition]);
     return this;
   }

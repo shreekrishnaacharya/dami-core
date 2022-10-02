@@ -39,8 +39,7 @@ class DamiApp {
     // }
     this.controllers = configSetting[Cattr.CONTROLLER];
     if (Dami.dbConfig) {
-      Connection.mysql = new Mysql(Dami.dbConfig);
-      Dami.db = Connection.mysql;
+      Dami.db = new Mysql(Dami.dbConfig);
       if (Dami.enableRbac) {
         initRbac();
       }

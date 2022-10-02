@@ -12,7 +12,7 @@ const ContentType = {
 // const __dirname = fs.realpathSync('.');
 class ReadFile {
   static index() {
-    console.log(__dirname, fs.existsSync(__dirname + '/../resource/client/index.html'));
+    // console.log(__dirname, fs.existsSync(__dirname + '/../resource/client/index.html'));
     return fs.readFileSync(__dirname + '/../resource/client/index.html', 'utf8');
   }
   static readPath(type: string, name: string): string {
@@ -28,14 +28,14 @@ class ReadFile {
     if (name === '' || name === undefined || name === null) {
       return false;
     }
-    console.log(_path.resolve(resPath))
+    // console.log(_path.resolve(resPath))
     if (!fs.existsSync(resPath)) {
-      console.log('file not found');
+      // console.log('file not found');
       return false;
     }
     // console.log(type,(type in ContentType))
     if (!(type in ContentType)) {
-      console.log('type not found');
+      // console.log('type not found');
       return false;
     }
     let model = '';

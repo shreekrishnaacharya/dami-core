@@ -1,3 +1,4 @@
+import Dami from '../app/Dami';
 import Mysql from '../db/mysql';
 import BaseModel from './BaseModel';
 BaseModel
@@ -11,11 +12,12 @@ export enum Query {
 abstract class Connection extends BaseModel {
   private queryString: string;
   protected queryType: string;
-  static mysql: Mysql;
+  private db: Mysql;
   constructor() {
     super();
     this.queryString = '';
     this.queryType = '';
+    this.db = Dami.db;
     return this;
   }
   /**
@@ -35,7 +37,7 @@ abstract class Connection extends BaseModel {
    * @param query | query string
    * @returns | current model
    */
-  protected createCommand(query: string) {
+  protected createCommand(query: string): Connection {
     this.queryString = query;
     // console.log(this.queryString)
     return this;
@@ -44,45 +46,45 @@ abstract class Connection extends BaseModel {
    * execute the query
    * @returns 
    */
-  protected execute() {
+  protected execute(): Promise<any> {
     this.queryType = Query.EXECUTE;
     // console.log(this.queryString)
-    return Connection.mysql.execute(this.queryString, this.callback);
+    return this.db.execute(this.queryString, this.callback);
   }
   /**
    * delete query
    * @returns 
    */
-  protected rawDelete() {
+  protected rawDelete(): Promise<any> {
     this.queryType = Query.DELETE;
-    return Connection.mysql.execute(this.queryString, this.callback);
+    return this.db.execute(this.queryString, this.callback);
   }
   /**
    * update query
    * @returns 
    */
-  protected rawUpdate() {
+  protected rawUpdate(): Promise<any> {
     this.queryType = Query.UPDATE;
     // console.log(this.queryString)
-    return Connection.mysql.execute(this.queryString, this.callback);
+    return this.db.execute(this.queryString, this.callback);
   }
   /**
    * bulk insert
    * @param records 
    * @returns 
    */
-  protected bulkInsert(records: any[]) {
+  protected bulkInsert(records: any[]): Promise<any> {
     this.queryType = Query.INSERT;
-    return Connection.mysql.insert(this.queryString, records, this.callback);
+    return this.db.insert(this.queryString, records, this.callback);
   }
   /**
    * raw insert
    * @param records 
    * @returns 
    */
-  protected rawInsert(records: any[]) {
+  protected rawInsert(records: any[]): Promise<any> {
     this.queryType = Query.INSERT;
-    return Connection.mysql.insert(this.queryString, [records], this.callback);
+    return this.db.insert(this.queryString, [records], this.callback);
   }
   /**
    * query all
@@ -102,17 +104,35 @@ abstract class Connection extends BaseModel {
    * query
    * @returns 
    */
-  protected query() {
+  protected query(): Promise<object[]> {
     this.queryType = Query.SELECT;
-    return Connection.mysql.query(this.queryString, this.callback);
+    return this.db.query(this.queryString, this.callback);
   }
   /**
    * raw query
    * @param query 
    * @returns 
    */
-  protected rawQuery(query: string) {
-    return Connection.mysql.query(query, this.callback);
+  protected rawQuery(query: string): Promise<object[]> {
+    return this.db.query(query, this.callback);
+  }
+
+  /**
+   * @returns Mysql
+   */
+  protected getDb(): Mysql {
+    return this.db;
+  }
+
+  /**
+   * @returns Mysql
+   */
+  protected setDb(db: Mysql) {
+    return this.db = db;
+  }
+
+  public beginTransaction() {
+    this.db = new Mysql(Dami.dbConfig);
   }
 }
 
