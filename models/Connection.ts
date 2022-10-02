@@ -131,8 +131,10 @@ abstract class Connection extends BaseModel {
     return this.db = db;
   }
 
-  public beginTransaction() {
+  public async beginTransaction() {
     this.db = new Mysql(Dami.dbConfig);
+    await this.db.beginTransaction();
+    return this.db;
   }
 }
 

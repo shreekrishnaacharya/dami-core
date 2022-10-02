@@ -5,16 +5,16 @@ import MyPool from './mypool';
 type SqlQuery = [string, Array<string | number>];
 class Mysql {
   private con: any;
-  private hasTransaction: boolean = false
-  constructor(dbConfig: IDatabase, transaction?: boolean) {
+  private connection = null;
+  private hasTransaction: boolean = false;
+  constructor(dbConfig: IDatabase) {
     if (dbConfig.dummy === true) {
       this.con = new MyPool(dbConfig);
     } else {
       this.con = mysql.createPool(dbConfig);
     }
-    if (transaction === true) {
-      this.hasTransaction = true;
-    }
+    this.connection = null;
+    this.hasTransaction = false;
   }
 
   format(query: string, values: Array<string | number>): string {
@@ -29,34 +29,18 @@ class Mysql {
       sql = mysql.format(sqlQuery[0], [...sqlQuery[1]])
     }
     // console.log(sql, "query")
-    // return new Promise((resolve, reject) => {
-    //   this.con.getConnection((err1: Error, connection) => {
-    //     if (err1) throw err1;
-    //     connection.query(sql, (err2: Error, result) => {
-    //       connection.release(); // return the connection to pool
-    //       if (err2) throw err2;
-    //       if (callback !== undefined) {
-    //         callback(err2, Object.values(JSON.parse(JSON.stringify(result))));
-    //       }
-    //       resolve(Object.values(JSON.parse(JSON.stringify(result))));
-    //     });
-    //   });
-    // });
-
     return new Promise((resolve, reject) => {
-      return this.getResult(resolve, reject)
-    }).then((connection: any) => {
-      connection.query(sql, (err2: Error, result) => {
-        connection.release(); // return the connection to pool
-        if (err2) throw err2;
-        if (callback !== undefined) {
-          callback(err2, Object.values(JSON.parse(JSON.stringify(result))));
-        }
-        return Object.values(JSON.parse(JSON.stringify(result)))
+      this.beginTransaction(false).then((connection: any) => {
+        connection.query(sql, (err2: Error, result) => {
+          if (!this.hasTransaction) connection.release(); // return the connection to pool
+          if (err2) throw err2;
+          if (callback !== undefined) {
+            callback(err2, Object.values(JSON.parse(JSON.stringify(result))));
+          }
+          resolve(Object.values(JSON.parse(JSON.stringify(result))));
+        });
       });
-
     });
-
   };
 
   queryOne = (sqlQuery: string | SqlQuery, callback?: (error: Error, result: Array<any>) => void): Promise<JSON | null> => {
@@ -76,65 +60,110 @@ class Mysql {
     } else {
       sql = mysql.format(sqlQuery[0], [...sqlQuery[1]])
     }
+    // console.log(sql, 'execute')
     return new Promise((resolve, reject) => {
-      return this.getResult(resolve, reject)
-    }).then((connection: any) => {
-      return connection.query(sql, (err: Error, result) => {
-        connection.release(); // return the connection to pool
-        if (err) {
-          if (callback !== undefined) {
-            callback(err, {});
+      this.beginTransaction(false).then((connection: any) => {
+        connection.query(sql, (err: Error, result) => {
+          if (!this.hasTransaction) connection.release(); // return the connection to pool
+          if (err) {
+            if (callback !== undefined) {
+              callback(err, {});
+            }
+            reject(err);
+          } else {
+            if (callback !== undefined) {
+              callback(err, result);
+            }
+            resolve(result);
           }
-          throw err;
-        } else {
-          if (callback !== undefined) {
-            callback(err, result);
-          }
-          return result;
-        }
+        });
       });
-    }).catch(err => {
-      if (callback !== undefined) {
-        callback(err, {});
-      }
-      throw err;
-    })
+    });
   };
 
   insert = (sql: string, records, callback?): Promise<any> => {
     // console.log(sql, 'insert')
-    return new Promise((resolve, reject) => {
-      return this.getResult(resolve, reject)
-    }).then((connection: any) => {
-      connection.query(sql, records, (err: Error, result) => {
-        connection.release(); // return the connection to pool
-        if (err) {
-          if (callback !== undefined) {
-            callback(err, {});
-          }
-          throw err;
-        } else {
-          if (callback !== undefined) {
-            callback(err, result);
-          }
-          return result;
-        }
+    if (this.connection === null)
+      return new Promise((resolve, reject) => {
+        this.beginTransaction(false).then((connection: any) => {
+          connection.query(sql, records, (err: Error, result) => {
+            if (!this.hasTransaction) connection.release(); // return the connection to pool
+            if (err) {
+              if (callback !== undefined) {
+                callback(err, {});
+              }
+              reject(err);
+            } else {
+              if (callback !== undefined) {
+                callback(err, result);
+              }
+              resolve(result);
+            }
+          });
+        })
       });
-    }).catch(err => {
-      if (callback !== undefined) {
-        callback(err, {});
-      }
-    })
   };
 
-  private getResult(resolve, reject) {
-    this.con.getConnection((err1: Error, connection) => {
-      if (err1) {
-        reject(err1)
-      } else {
-        resolve(connection)
+  public beginTransaction(hasTransaction?: boolean) {
+    if (hasTransaction === false) {
+      this.hasTransaction = false
+    }
+    if (this.connection !== null) {
+      return Promise.resolve(this.connection);
+    }
+    return new Promise((resolve, reject) => {
+      if (this.hasTransaction === false) {
+        return this.con.getConnection((err1: Error, connection: any) => {
+          if (err1) throw err1
+          return resolve(connection)
+        })
       }
-    });
+      this.con.getConnection((err1: Error, connection: any) => {
+        if (err1) throw err1
+        return connection.beginTransaction((err: Error) => {
+          if (err) {
+            connection.release();
+            throw err
+          }
+          this.connection = connection;
+          resolve(connection)
+        });
+      });
+    })
+  }
+
+  public commit() {
+    return new Promise((resolve, reject) => {
+      if (this.connection === null) {
+        return resolve(false)
+      }
+      return this.connection.commit((err) => {
+        if (err) {
+          return this.connection.rollback(() => {
+            this.connection.release();
+            return reject("Commit failed");
+          });
+        }
+        this.connection.release();
+        this.connection = null;
+        this.hasTransaction = false;
+        return resolve(true)
+      });
+    })
+  }
+
+  public rollBack() {
+    return new Promise((resolve, reject) => {
+      if (this.connection === null) {
+        return resolve(false)
+      }
+      return this.connection.rollback(() => {
+        this.connection.release();
+        this.connection = null;
+        this.hasTransaction = false;
+        return resolve(true)
+      });
+    })
   }
 }
 export default Mysql;
