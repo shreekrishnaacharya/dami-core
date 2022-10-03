@@ -1,5 +1,11 @@
 import { RuleType, RuleConst } from './IRules';
-
+/**
+ *
+ *
+ * @param {string} rul
+ * @param {string} name
+ * @return {*} 
+ */
 const checkStrRule = (rul: string, name: string) => {
   const rule = {
     message: '',
@@ -26,7 +32,13 @@ const checkStrRule = (rul: string, name: string) => {
   }
   return rule;
 };
-
+/**
+ *
+ *
+ * @param {*} rul
+ * @param {*} name
+ * @return {*} 
+ */
 const checkObjRule = (rul, name) => {
   const rule = {
     message: '',
@@ -93,6 +105,13 @@ const checkObjRule = (rul, name) => {
   }
   return rule;
 };
+/**
+ *
+ *
+ * @param {*} name
+ * @param {*} rules
+ * @return {*} 
+ */
 const chkat = (name, rules) => {
   const label = name.replace('_', ' ');
   const att = {
@@ -134,6 +153,14 @@ const validatePhone = (phone: string) => {
 const validateRegx = (value, regx) => {
   return regx.test(String(value).toLowerCase());
 };
+/**
+ *
+ *
+ * @param {string} name
+ * @param {*} _currentAttr
+ * @param {*} _attributes
+ * @return {*} 
+ */
 const checkRules = (name: string, _currentAttr, _attributes) => {
   const attr = _currentAttr;
   const _value = _attributes[name];

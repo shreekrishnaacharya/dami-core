@@ -343,12 +343,27 @@ class ActiveQuery extends Connection {
     this.joinMany.push([name, table, condition]);
     return this;
   }
-
+  /**
+   *
+   *
+   * @private
+   * @param {Promise<any>} promise
+   * @return {*} 
+   * @memberof ActiveQuery
+   */
   private async pPromise(promise: Promise<any>) {
     const result = await promise;
     return this.getAtt(result);
   }
 
+  /**
+   *
+   *
+   * @private
+   * @param {*} result
+   * @return {*} 
+   * @memberof ActiveQuery
+   */
   private async getAtt(result: any) {
     if (this.queryType === Query.DELETE) {
       return await this.afterDelete(result.affectedRows > 0 ? true : false);
@@ -433,6 +448,14 @@ class ActiveQuery extends Connection {
     }).then(r => r[0])
   }
 
+  /**
+   *
+   *
+   * @private
+   * @param {string} query
+   * @return {*} 
+   * @memberof ActiveQuery
+   */
   private validateGlue(query: string) {
     try {
       if (query.toLowerCase().split("select")[1].split("from")[0].includes(this.getMyId()))
