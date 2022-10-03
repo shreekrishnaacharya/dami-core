@@ -5,6 +5,13 @@ import BaseModel from './BaseModel';
 import { DataType, IAttList, RuleType } from './IRules';
 import { checkRules } from './_validate';
 
+/**
+ *
+ *
+ * @abstract
+ * @class ActiveRecords
+ * @extends {ActiveQuery}
+ */
 abstract class ActiveRecords extends ActiveQuery {
   public _validate: IAttList;
   constructor(tableName: string) {

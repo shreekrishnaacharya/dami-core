@@ -16,12 +16,22 @@ class Mysql {
     this.connection = null;
     this.hasTransaction = false;
   }
-
+  /**
+   * 
+   * @param query 
+   * @param values 
+   * @returns 
+   */
   format(query: string, values: Array<string | number>): string {
     return mysql.format(query, values)
   }
-
-  query = (sqlQuery: string | SqlQuery, callback?: (error: Error, result: Array<any>) => void): Promise<Array<object>> => {
+  /**
+   * 
+   * @param sqlQuery 
+   * @param callback 
+   * @returns 
+   */
+  query(sqlQuery: string | SqlQuery, callback?: (error: Error, result: Array<any>) => void): Promise<Array<object>> {
     let sql = "";
     if (typeof sqlQuery === "string") {
       sql = sqlQuery.toString();
@@ -42,8 +52,13 @@ class Mysql {
       });
     });
   };
-
-  queryOne = (sqlQuery: string | SqlQuery, callback?: (error: Error, result: Array<any>) => void): Promise<JSON | null> => {
+  /**
+   * 
+   * @param sqlQuery 
+   * @param callback 
+   * @returns 
+   */
+  queryOne(sqlQuery: string | SqlQuery, callback?: (error: Error, result: Array<any>) => void): Promise<JSON | null> {
     return this.query(sqlQuery, callback).then((res: Array<any>) => {
       if (res.length > 0) {
         return res[0]
@@ -52,8 +67,13 @@ class Mysql {
       }
     })
   };
-
-  execute = (sqlQuery: SqlQuery | string, callback?): Promise<any> => {
+  /**
+   * 
+   * @param sqlQuery 
+   * @param callback 
+   * @returns 
+   */
+  execute(sqlQuery: SqlQuery | string, callback?): Promise<any> {
     let sql = "";
     if (typeof sqlQuery === "string") {
       sql = sqlQuery.toString();
@@ -69,7 +89,7 @@ class Mysql {
             if (callback !== undefined) {
               callback(err, {});
             }
-            reject(err);
+            throw err
           } else {
             if (callback !== undefined) {
               callback(err, result);
@@ -80,33 +100,76 @@ class Mysql {
       });
     });
   };
-
-  insert = (sql: string, records, callback?): Promise<any> => {
+  /**
+   * 
+   * @param sql 
+   * @param records 
+   * @param callback 
+   * @returns 
+   */
+  insert(sql: string, records, callback?): Promise<any> {
     // console.log(sql, 'insert')
-    if (this.connection === null)
-      return new Promise((resolve, reject) => {
-        this.beginTransaction(false).then((connection: any) => {
-          connection.query(sql, records, (err: Error, result) => {
-            if (!this.hasTransaction) connection.release(); // return the connection to pool
-            if (err) {
-              if (callback !== undefined) {
-                callback(err, {});
-              }
-              reject(err);
-            } else {
-              if (callback !== undefined) {
-                callback(err, result);
-              }
-              resolve(result);
+    return new Promise((resolve, reject) => {
+      this.beginTransaction(false).then((connection: any) => {
+        connection.query(sql, records, (err: Error, result) => {
+          if (!this.hasTransaction) connection.release(); // return the connection to pool
+          if (err) {
+            if (callback !== undefined) {
+              callback(err, {});
             }
-          });
-        })
-      });
+            throw err
+          } else {
+            if (callback !== undefined) {
+              callback(err, result);
+            }
+            resolve(result);
+          }
+        });
+      })
+    });
   };
-
+  /**
+   * begin transaction
+   * @param hasTransaction 
+   * @returns Mysql
+   * 
+   * eg: 
+   * const model=new Customer();
+   * if(model.load(req.body)){
+   * const transaction=model.beginTransaction();
+   * let flag=true;
+   *  try{
+   *      if(await model.save()){
+   *          for(const address in req.addresses){
+   *            const contact=new Contact();
+   *            contact.bindTransaction(transaction);
+   *            contact.load(req.body)
+   *            contact.setValue('fk_customer_id',model.id);  
+   *            if(!await contact.save()){
+   *              flag=false;
+   *            }
+   *          }
+   *          if(flag){
+   *            transaction.commit()
+   *            res.sendStatus(HttpCode.ACCEPTED);
+   *            return next();
+   *          }
+   *        }
+   *        res.sendStatus(HttpCode.BAD_REQUEST);
+   *   }catch(e=>{
+   *        res.status(HttpCode.INTERNAL_SERVER_ERROR).send({});
+   *   })
+   *    transaction.rollBack();
+   *  }else{
+   *    res.sendStatus(HttpCode.BAD_REQUEST);
+   *  }
+   * next();
+   * }
+   * 
+   */
   public beginTransaction(hasTransaction?: boolean) {
-    if (hasTransaction === false) {
-      this.hasTransaction = false
+    if (hasTransaction === true) {
+      this.hasTransaction = true
     }
     if (this.connection !== null) {
       return Promise.resolve(this.connection);
@@ -131,7 +194,10 @@ class Mysql {
       });
     })
   }
-
+  /**
+   * Commit transaction
+   * @returns 
+   */
   public commit() {
     return new Promise((resolve, reject) => {
       if (this.connection === null) {
@@ -140,8 +206,8 @@ class Mysql {
       return this.connection.commit((err) => {
         if (err) {
           return this.connection.rollback(() => {
-            this.connection.release();
-            return reject("Commit failed");
+            // this.connection.release();
+            throw err
           });
         }
         this.connection.release();
@@ -151,14 +217,17 @@ class Mysql {
       });
     })
   }
-
+  /**
+   * Rollback the transaction
+   * @returns 
+   */
   public rollBack() {
     return new Promise((resolve, reject) => {
       if (this.connection === null) {
         return resolve(false)
       }
       return this.connection.rollback(() => {
-        this.connection.release();
+        // this.connection.release();
         this.connection = null;
         this.hasTransaction = false;
         return resolve(true)

@@ -5,6 +5,12 @@ import ListModel from '../helpers/ListModel';
 import JoinTable from '../helpers/JoinTable';
 // import assert from 'assert'
 
+/**
+ *
+ *
+ * @class ActiveQuery
+ * @extends {Connection}
+ */
 class ActiveQuery extends Connection {
   // private isNew: boolean;
   private isAll: boolean;
@@ -49,11 +55,26 @@ class ActiveQuery extends Connection {
     insertQuery += `(${columns.join(',')}) VALUES ?`;
     return this.pPromise(this.createCommand(insertQuery).bulkInsert([record]));
   }
+  /**
+   *
+   *
+   * @param {object} [condition]
+   * @return {*}  {Promise<boolean>}
+   * @memberof ActiveQuery
+   */
   async deleteAll(condition?: object): Promise<boolean> {
     this.checkColumn(condition);
     const [dpn, values] = this.getDelete(condition);
     return this.pPromise(this.createCommand(mysql.format(dpn.toString(), [...values])).rawDelete());
   }
+  /**
+   *
+   *
+   * @param {object} record
+   * @param {object} [condition]
+   * @return {*}  {Promise<boolean>}
+   * @memberof ActiveQuery
+   */
   async updateAll(record: object, condition?: object): Promise<boolean> {
     this.checkColumn(record);
     this.checkColumn(condition);
