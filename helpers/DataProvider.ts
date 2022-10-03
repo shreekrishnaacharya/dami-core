@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Connection } from '../models/Connection';
+import Dami from '../app/Dami';
 import IActiveModel from '../models/IActiveModel';
 import QueryBuild from '../models/QueryBuild';
 
@@ -82,7 +82,7 @@ export default class DataProvider {
         this.queryModel.andFilterWhere({ [this.model.getTable() + '.' + nam]: queryAttr[nam] });
       }
     }
-    const promish1 = Connection.mysql.query(this.queryModel.build(true));
+    const promish1 = Dami.db.query(this.queryModel.build(true));
     promish1.then((result) => {
       this.totalCount = parseInt(result[0][DPType.TOTAL_COUNT], 10);
       return result[0];

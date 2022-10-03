@@ -1,11 +1,11 @@
-import { Connection } from '../../models/Connection';
-import { MODELS, TableList } from './constants';
+import { MODELS } from './constants';
 import * as fs from 'fs';
 import * as _path from 'path';
+import Dami from '../../app/Dami';
 
 class ReadRbac {
   static async checkInit() {
-    return await Connection.mysql
+    return await Dami.db
       .query('SHOW TABLES')
       .then((e1: object[]) => {
         let flag = false;
@@ -23,7 +23,7 @@ class ReadRbac {
 
   static async redo() {
     const rbacQuery = fs.readFileSync(__dirname + '/../resource/db/rbac.mysql', 'utf8');
-    return Connection.mysql
+    return Dami.db
       .query(rbacQuery)
       .then(() => {
         return true;

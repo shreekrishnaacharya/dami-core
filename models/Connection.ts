@@ -17,8 +17,8 @@ abstract class Connection extends BaseModel {
     super();
     this.queryString = '';
     this.queryType = '';
-    this.db = Dami.db;
-    return this;
+    // this.db = Dami.db;
+    // return this;
   }
   /**
    * function to be called after the result are available
@@ -37,9 +37,8 @@ abstract class Connection extends BaseModel {
    * @param query | query string
    * @returns | current model
    */
-  protected createCommand(query: string): Connection {
+  protected createCommand(query: string) {
     this.queryString = query;
-    // console.log(this.queryString)
     return this;
   }
   /**

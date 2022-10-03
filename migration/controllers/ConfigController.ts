@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
+import Dami from '../../app/Dami';
 import Controller from '../../controllers/Controller';
 import Methods from '../../controllers/Methods';
 import HttpCode from '../../helpers/HttpCode';
-import { Connection } from '../../models/Connection';
 import MigType from '../config/const';
 import ReadSchema from '../Helper/ReadSchema';
 import TestSpecialChar from '../Helper/SpecialCharacter';
@@ -12,7 +12,7 @@ class ConfigController extends Controller<any> {
     super('');
   }
   tables = async (req: Request, res: Response, next: NextFunction) => {
-    const result = await Connection.mysql
+    const result = await Dami.db
       .query('SHOW TABLES')
       .then((e: object[]) => {
         if (e.length > 0) {

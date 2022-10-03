@@ -1,9 +1,8 @@
-import { Connection } from '../../models/Connection';
-
 import * as fs from 'fs';
 import * as util from 'util';
 import * as _path from 'path';
 import { fileURLToPath } from 'url';
+import Dami from '../../app/Dami';
 const __dirname = _path.dirname(fileURLToPath(import.meta.url));
 
 const NumericType = [
@@ -51,7 +50,7 @@ class ReadSchema {
   errors: string[] = [];
   async getTableRules() {
     const tableinfo = {};
-    return Connection.mysql
+    return Dami.db
       .query(`SHOW FULL COLUMNS FROM ${this.tableName}`)
       .then((e: ShowColumn[]) => {
         e.forEach(({ Field, Type, Null, Default, Key }) => {

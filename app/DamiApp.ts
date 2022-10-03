@@ -1,5 +1,4 @@
 import LogTrack from '../log/LogTrack';
-import { Connection } from '../models/Connection';
 import Mysql from '../db/mysql';
 import Methods from '../controllers/Methods';
 import cors from 'cors';

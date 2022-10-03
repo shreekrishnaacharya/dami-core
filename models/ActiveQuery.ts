@@ -3,14 +3,14 @@ import QueryBuild from './QueryBuild';
 import { Connection, Query } from './Connection';
 import ListModel from '../helpers/ListModel';
 import JoinTable from '../helpers/JoinTable';
-import assert from 'assert'
+// import assert from 'assert'
 
 class ActiveQuery extends Connection {
-  private isNew: boolean;
+  // private isNew: boolean;
   private isAll: boolean;
   public joinOne: any[];
   public joinMany: any[];
-  private _buildQuery: QueryBuild;
+  // private _buildQuery: QueryBuild;
   private _glueQuery: any[]
   ['constructor']: any;
   constructor() {
