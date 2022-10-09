@@ -7,4 +7,8 @@ declare namespace Express {
     authJson?: any
     files?: any
   }
+  export interface Response {
+    meta?: object[],
+    title?: string
+  }
 }

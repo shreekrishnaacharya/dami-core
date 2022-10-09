@@ -2,7 +2,7 @@ import Dami from '../app/Dami';
 import Actions from '../migration/models/Actions';
 import { camelToText } from './TextHelper';
 import CTypes from '../config/ConfigTypes'
-import ListModel from './ListModel';
+import { ListModel } from '@damijs/mysql';
 enum CListType {
   NAME = 'name',
   ACTION = 'action',

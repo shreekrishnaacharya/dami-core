@@ -1,12 +1,13 @@
 import Dami from '../app/Dami';
 import MiddleWare from '../app/MiddleWare';
-import BaseController from '../controllers/BaseController';
 import IMiddleWare from '../app/IMiddleWare';
 import HttpCode from '../helpers/HttpCode';
 import HttpHead from '../helpers/HttpHead';
+import IAuth from './IAuth';
+import IController from '../controllers/IController';
 class Authorization extends MiddleWare implements IMiddleWare {
-  controller: BaseController<any>;
-  constructor(controller: BaseController<any>) {
+  controller: IController;
+  constructor(controller: IController) {
     super();
     this.controller = controller;
   }
@@ -16,12 +17,12 @@ class Authorization extends MiddleWare implements IMiddleWare {
 
   protected auth = async (req, res, next) => {
     const guardActions: string[] | boolean = this.controller.requiredLogin();
-    let userModel = null;
+    let userModel: IAuth | null = null;
     if ("authUser" in Dami.loginUser) {
       userModel = new Dami.loginUser.authUser();
     } else {
       const cpath = this.controller.getPath();
-      let kpath = null;
+      let kpath: string | null = null;
       Object.keys(Dami.loginUser).forEach(e => {
         if (cpath.startsWith(e)) {
           kpath = e
@@ -64,7 +65,9 @@ class Authorization extends MiddleWare implements IMiddleWare {
     // get token by spliting bearer and token
     const bearerToken = bearerHeader.split(' ')[1];
 
-
+    if (userModel == null) {
+      return res.status(HttpCode.UNAUTHORIZED).send('Login required :1001').end();
+    }
     // decode the token to verify user
     if (!userModel.validateToken(bearerToken)) {
       return res.status(HttpCode.UNAUTHORIZED).send('Login required :1003').end();

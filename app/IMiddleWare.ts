@@ -1,6 +1,6 @@
-import BaseController from '../controllers/BaseController';
+import IController from '../controllers/IController';
 
 export default interface IMiddleWare {
-  controller: BaseController<any>;
+  controller: IController;
   run: (req, res, next) => void;
 }

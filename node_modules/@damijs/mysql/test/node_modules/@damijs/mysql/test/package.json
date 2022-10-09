@@ -1,0 +1,27 @@
+{
+    "name": "damijs",
+    "version": "2.2.1",
+    "homepage": "https://github.com/damijs/core",
+    "email": "app.dami.js@gmail.com",
+    "description": "Dami is a nodejs framework above expressjs. It consist of library and tools that will let you quickly setup your web application writing less code for you so you can focus on your business logic.",
+    "main": "dist/index.js",
+    "type": "module",
+    "scripts": {
+        "build": "rm -rf dist/* && npx tsc && cp -r ./main/migration/resource ./dist/migration/resource && rm -rf ../voteup/lib/dist/* && cp -r dist/* ../voteup/lib/dist/"
+    },
+    "author": "Shree Krishna Acharya",
+    "license": "MIT",
+    "dependencies": {
+        "axios": "^0.27.2"
+    },
+    "devDependencies": {
+        "@types/cors": "^2.8.12",
+        "@types/express": "^4.17.13",
+        "@types/jsonwebtoken": "^8.5.8",
+        "@types/mysql": "^2.15.21",
+        "@types/sharp": "^0.31.0",
+        "nodemon": "^2.0.19",
+        "ts-node": "^10.8.2",
+        "typescript": "^4.7.4"
+    }
+}

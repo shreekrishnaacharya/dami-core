@@ -3,7 +3,8 @@ import GuestUser from '../auth/GuestUser';
 import { IDamiConfig, IDatabase, IPubdirConfig } from './IConfig';
 
 const appConfig: IDamiConfig = {
-  production: true,
+  appName: "Dami App",
+  production: false,
   port: 3000,
   loginUser: {
     authUser: GuestUser,

@@ -1,5 +1,4 @@
-import { ActiveRecords } from '../../index';
-import { Query } from '../../models/Connection';
+import { Query, ActiveRecords } from '@damijs/mysql';
 import { MODELS } from '../Helper/constants';
 import Actions from './Actions';
 import RoleAction from './RoleAction';

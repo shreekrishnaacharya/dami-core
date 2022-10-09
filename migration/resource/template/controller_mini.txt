@@ -1,6 +1,6 @@
-import { NextFunction, Request, Response } from "damijs";
-import { Controller, DataProvider, HttpCode, Methods } from "damijs";
-import {{@modelName}} from "{{@modelPath}}";
+import { NextFunction, Request, Response } from "@damijs/core";
+import { Controller, DataProvider, HttpCode, Methods } from "@damijs/core";
+import {{@modelName}} from "{{@_modelPath}}";
 
 class {{@controllerName}} extends Controller<{{@modelName}}> {
     constructor() {

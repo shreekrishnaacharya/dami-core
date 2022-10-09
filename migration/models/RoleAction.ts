@@ -1,5 +1,4 @@
-import { ActiveRecords } from '../../index';
-import QueryBuild from '../../models/QueryBuild';
+import { ActiveRecords, QueryBuild } from '@damijs/mysql';
 import { MODELS } from '../Helper/constants';
 class RoleAction extends ActiveRecords {
   constructor() {

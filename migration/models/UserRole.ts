@@ -1,5 +1,5 @@
 import { MODELS } from '../Helper/constants';
-import { ActiveRecords } from '../../index';
+import { ActiveRecords } from '@damijs/mysql';
 class UserRole extends ActiveRecords {
   constructor() {
     super(MODELS.USER_ROLE);

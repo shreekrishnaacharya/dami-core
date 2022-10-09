@@ -1,23 +1,25 @@
 import appConfig from '../config/app';
-import DamiCache from '../helpers/DamiCache';
+import DamiCache from '@damijs/cache';
 import MiddleWare from './MiddleWare';
 import * as _path from 'path';
 import CType from "../config/ConfigTypes"
 import { IDatabase, IPubdirConfig, IUserAuth, IUserAuthList, _IUserConfig, IDamiConfig } from "../config/IConfig"
-import Mysql from '../db/mysql';
+import { Mysql } from '@damijs/mysql';
 import IAuth from '../auth/IAuth';
 const damiVar = [
-  'port', 'publicDir', 'dbConfig',
+  'port', 'publicDir', 'dbConfig', 'appName', 'basePath',
   'baseUrl', 'requiredLogin', 'beforeAction',
   'afterAction', 'rbac', 'loginUser', 'enableRbac'
 ]
 class Dami {
+  static appName: string
   static config: IDamiConfig;
   static port: number;
   static publicDir: IPubdirConfig;
   static dbConfig: IDatabase;
-  static db: Mysql = null;
+  static db: Mysql;
   static baseUrl: string;
+  static basePath: string;
   static loginUser: IUserAuth | IUserAuthList;
   static enableRbac: boolean;
   private static store: DamiCache;
@@ -35,18 +37,18 @@ class Dami {
         this[conf] = config[conf];
       }
     }
-    if ('damiList' in config) {
-      for (const dl of Object.keys(config.damiList)) {
+    if ('damiList' in config && config.damiList != undefined) {
+      for (const dl of Object.keys({ ...config.damiList })) {
         Dami[dl] = config.damiList[dl];
       }
     }
     Dami.config = config;
-    if (config[CType.BASE_PATH].length === 0) {
+    if (!(CType.RESOURCE_PATH in config)) {
       throw new Error('basePath config not setup!');
     }
     this.authTokens = new DamiCache();
     this.store = new DamiCache();
-    this._dirname = _path.resolve(_path.dirname('')) + '/' + config[CType.BASE_PATH] + '/';
+    this._dirname = _path.resolve(_path.dirname('')) + '/' + config[CType.RESOURCE_PATH] + '/';
   }
   static requiredLogin = (): boolean | [] => {
     return true;
@@ -89,9 +91,9 @@ class Dami {
         letpath = sppath.join('/');
       }
     }
-
-    if (dirnam in Dami.config[CType.PATH]) {
-      return this._dirname + Dami.config[CType.PATH][dirnam] + letpath + (name === undefined ? '' : name);
+    const config = Dami.config[CType.PATH];
+    if (config != undefined && dirnam in config) {
+      return this._dirname + config[dirnam] + letpath + (name === undefined ? '' : name);
     }
     throw new Error(`Path '${path}' not set`);
   }

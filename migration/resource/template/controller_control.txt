@@ -1,5 +1,5 @@
-import { NextFunction, Request, Response } from "damijs";
-import { Controller } from "damijs";
+import { NextFunction, Request, Response } from "@damijs/core";
+import { Controller } from "@damijs/core";
 
 class {{@controllerName}} extends Controller<any> {
     constructor() {

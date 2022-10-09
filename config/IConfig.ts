@@ -1,3 +1,4 @@
+import IMiddleWare from "../app/IMiddleWare";
 import IAuth from "../auth/IAuth";
 import IController from "../controllers/IController";
 
@@ -49,16 +50,27 @@ export interface IDamiList {
     [key: string]: object
 }
 
+
+export interface IServerRender {
+    path: string
+    has: boolean
+    middleWare: IMiddleWare
+    page: string
+}
+
+
 export interface IDamiConfig {
+    appName: string,
     production: boolean
     port: number
-    controllers: IControllerList
+    controllers: IControllerList | null
     baseUrl: string
     viewEngine?: string,
     damiList?: IDamiList
     loginUser?: IUserAuthList | IUserAuth
     publicDir?: IPubdirConfig
     basePath?: string
+    resourcePath?: string
     path?: object
     initAction?: Function
     requiredLogin?: IRequiredLoginFunc
@@ -68,4 +80,5 @@ export interface IDamiConfig {
     dbConfig?: IDatabase
     enableRbac?: boolean
     services?: Array<any>
+    serverRender?: IServerRender
 }

@@ -1,5 +1,5 @@
 import LogTrack from '../log/LogTrack';
-import Mysql from '../db/mysql';
+import { Mysql } from '@damijs/mysql';
 import Methods from '../controllers/Methods';
 import cors from 'cors';
 import Dami from './Dami';
@@ -14,13 +14,13 @@ import Cattr from "../config/ConfigTypes"
 import * as _path from 'path';
 import { fileURLToPath } from 'url';
 import Controller from '../controllers/Controller';
-import { IDamiConfig } from '../config/IConfig';
+import { IControllerList, IDamiConfig } from '../config/IConfig';
 
 const __dirname = _path.dirname(fileURLToPath(import.meta.url));
 
 class DamiApp {
   static config: object;
-  private controllers: object;
+  private controllers: IControllerList | null;
   private app: any
   constructor() {
     this.app = express();
@@ -37,6 +37,7 @@ class DamiApp {
     //     throw new Error('Controllers not set in config file')
     // }
     this.controllers = configSetting[Cattr.CONTROLLER];
+
     if (Dami.dbConfig) {
       Dami.db = new Mysql(Dami.dbConfig);
       if (Dami.enableRbac) {
@@ -56,8 +57,11 @@ class DamiApp {
       exposedHeaders:
         'x-pagination-current-page,x-pagination-page-count,x-pagination-per-page,x-pagination-total-count',
     };
-    if (!_fs.existsSync(Dami.config[Cattr.BASE_PATH])) {
-      _fs.mkdirSync(Dami.config[Cattr.BASE_PATH]);
+    const configBasePath = Dami.config[Cattr.BASE_PATH];
+    if (configBasePath != undefined) {
+      if (!_fs.existsSync(configBasePath)) {
+        _fs.mkdirSync(configBasePath);
+      }
     }
     app.use(cors(corsOptions));
     app.use(express.urlencoded({ extended: true }));
@@ -77,19 +81,15 @@ class DamiApp {
     app.use((req, res, next) => {
       // req.counter = Math.floor(Math.random() * 10000)
       count++;
-      // req.counter = count
-      // console.log("Counter : " + count)
-      // console.log(Dami.authTokens);
       next();
     });
 
-    // app.use((req, res, next) => {
-    //   console.log("1 Counter : " + count + " Req :" + req.counter)
-    //   next();
-    // });
     app.use(track.start);
     if (initRun) {
       initRun(app)
+    }
+    if (this.controllers == null) {
+      throw new Error(`Controllers 'controllers' not configured`);
     }
     const controllers = this.getControllers(this.controllers);
     for (const contr of controllers) {
@@ -129,72 +129,66 @@ class DamiApp {
         app.use(`/${control}`, middle.run);
       }
     }
-    // app.use((req, res, next) => {
-    //   setTimeout(() => console.log("2 Counter : " + count + " Req :" + req.counter), 100)
-    //   next();
-    // });
-    // app.use((req, res, next) => {
-    //   console.log(process)
-    //   setTimeout(() => {
-    //     next();
-    //   }, 5000)
-    // });
 
     /**
      * this is where dami auto code generator is register
      */
-    app.use(`/${Cattr.APP_NAME}`, (req, res, next) => {
+    if (!Dami.config[Cattr.PRODUCTION]) {
       if (Object.keys(Dami.dbConfig).length === 0) {
-        res.status(HttpCode.BAD_GATEWAY).send('Db not configured').end();
+        app.use(`/${Cattr.APP_NAME}`, (req, res, next) => {
+          if (Object.keys(Dami.dbConfig).length === 0) {
+            res.status(HttpCode.BAD_GATEWAY).send("Database with 'dbConfig' not configured").end();
+          }
+          else {
+            next();
+          }
+        });
       } else {
-        next();
-      }
-    });
-    for (const control of Object.keys(MigrateList)) {
-      const router = express.Router();
-      const controller = MigrateList[control];
-      controller.setPath(`/${control}`);
-      const routList = controller.route();
-      for (const { method, path, action } of routList) {
-        switch (method) {
-          case Methods.GET:
-            router.get(path, controller[action]);
-            break;
-          case Methods.POST:
-            router.post(path, controller[action]);
-            break;
-          case Methods.PUT:
-            router.put(path, controller[action]);
-            break;
-          case Methods.DELETE:
-            router.delete(path, controller[action]);
-            break;
-          default:
-            throw new Error(`Method '${method}' does not exist for route '${control}'`);
+        for (const control of Object.keys(MigrateList)) {
+          const router = express.Router();
+          const controller = MigrateList[control];
+          controller.setPath(`/${control}`);
+          const routList = controller.route();
+          for (const { method, path, action } of routList) {
+            switch (method) {
+              case Methods.GET:
+                router.get(path, controller[action]);
+                break;
+              case Methods.POST:
+                router.post(path, controller[action]);
+                break;
+              case Methods.PUT:
+                router.put(path, controller[action]);
+                break;
+              case Methods.DELETE:
+                router.delete(path, controller[action]);
+                break;
+              default:
+                throw new Error(`Method '${method}' does not exist for route '${control}'`);
+            }
+          }
+          let tmpControl = '/' + control;
+          if (control === Cattr.APP_NAME) {
+            tmpControl = '';
+          }
+          app.use(`/${Cattr.APP_NAME + tmpControl}`, router);
         }
+        app.use(`/${Cattr.APP_NAME}`, express.static(__dirname + "/../migration/resource/client"));
       }
-      let tmpControl = '/' + control;
-      if (control === Cattr.APP_NAME) {
-        tmpControl = '';
-      }
-      app.use(`/${Cattr.APP_NAME + tmpControl}`, router);
     }
-    app.get(`/${Cattr.APP_NAME}`, express.static(__dirname + "/../migration/resource/client"));
     if (Object.values(Dami.publicDir).length > 0) {
       if (Dami.publicDir.from != undefined) {
         app.use(Dami.publicDir.from, express.static(Dami.publicDir.path));
       } else {
-        app.use(express.static(Dami.publicDir.path));
+        app.use((req, res, next) => {
+          
+          express.static(Dami.publicDir.path)(req, res, next)
+        });
       }
     }
     app.use(track.memory);
     app.use(track.time);
     app.use(track.end);
-    // app.use((req, res, next) => {
-    //   console.log("3 Counter : " + count + " Req :" + req.counter)
-    //   next()
-    // });
-
     app.listen(Dami.port, () => console.log(`Your app listening on port ${Dami.port}!`));
   };
 

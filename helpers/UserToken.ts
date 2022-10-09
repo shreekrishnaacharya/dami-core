@@ -1,5 +1,3 @@
-import * as jwt from 'jsonwebtoken';
-import Dami from '../app/Dami';
 
 export interface IUserToken {
   authkey: string;

@@ -1,6 +1,6 @@
 import sharp from 'sharp';
 import * as _path from 'path';
-import Rid from './Rid';
+import Rid from '@damijs/rid';
 import * as _fs from 'fs';
 import Dami from '../app/Dami';
 

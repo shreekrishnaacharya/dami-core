@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import DataProvider from '../helpers/DataProvider';
 import HttpCode from '../helpers/HttpCode';
-import ActiveRecords from '../models/ActiveRecord';
+import { ActiveRecords, DataProvider } from '@damijs/mysql';
 import BaseController from './BaseController';
 import Methods from './Methods';
 import { IRoute } from './Route';

@@ -1,0 +1,11 @@
+{
+    "name": "@damijs/hp",
+    "homepage": "https://github.com/damijs/hp",
+    "email": "app.dami.js@gmail.com",
+    "version": "1.2.2",
+    "description": "Dami hp ",
+    "main": "dist/index.js",
+    "type": "module",
+    "author": "Shree Krishna Acharya",
+    "license": "MIT"
+}

@@ -13,7 +13,7 @@ class Url {
           .join('&');
     }
     if (absolute === true) {
-      _url = Dami.baseUrl + _url;
+      _url = Dami.baseUrl + '/' + Dami.basePath + _url;
     }
     return encodeURI(_url);
   }

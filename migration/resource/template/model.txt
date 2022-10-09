@@ -1,7 +1,7 @@
-import { ActiveRecords } from "damijs";
+import { ActiveRecords } from "@damijs/core";
 class {{@modelName}} extends ActiveRecords {
     constructor() {
-        super("{{@table_name}}");
+        super("{{@tableName}}");
         this.init()
     }
     rules = () => {

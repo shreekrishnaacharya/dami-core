@@ -3,7 +3,7 @@ import Dami from '../app/Dami';
 import MiddleWare from '../app/MiddleWare';
 import '../customs/custom';
 import { PathMatch } from '../helpers/PathMatch';
-import ActiveRecords from '../models/ActiveRecord';
+import { ActiveRecords } from '@damijs/mysql';
 import IController from './IController';
 import IAuth from '../auth/IAuth';
 abstract class BaseController<Model> implements IController {
@@ -24,7 +24,7 @@ abstract class BaseController<Model> implements IController {
   /**
    * get path to current controller
    *  */
-  getPath() {
+  getPath(): string {
     return this.path;
   }
   /**

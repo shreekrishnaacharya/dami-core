@@ -1,0 +1,34 @@
+{
+    "name": "@damijs/core",
+    "version": "2.3.3",
+    "description": "@damijs/core is a nodejs framework above expressjs. It consist of library and tools that will let you quickly setup your web application writing less code for you so you can focus on your business logic.",
+    "type": "module",
+    "main": "index.ts",
+    "scripts": {
+        "build": "rm -rf ../publish/core/dist/* && npx tsc && cp -r migration/resource/* ../publish/core/dist/migration/resource/ && cp -r ../publish/core/dist/* ../../voteup/node_modules/@damijs/core/dist/"
+    },
+    "author": "Shree Krishna Acharya",
+    "license": "MIT",
+    "dependencies": {
+        "const": "^1.0.0",
+        "cors": "^2.8.5",
+        "express": "^4.17.3",
+        "express-fileupload": "^1.3.1",
+        "jsonwebtoken": "^8.5.1",
+        "sharp": "^0.30.5",
+        "@damijs/mysql": "2.2.7",
+        "@damijs/rid": "1.2.3",
+        "@damijs/hp": "1.2.2",
+        "@damijs/cache": "1.2.2"
+    },
+    "devDependencies": {
+        "@types/cors": "^2.8.12",
+        "@types/express": "^4.17.13",
+        "@types/jsonwebtoken": "^8.5.8",
+        "@types/sharp": "^0.31.0",
+        "jest": "^29.1.2",
+        "nodemon": "^2.0.19",
+        "ts-node": "^10.8.2",
+        "typescript": "^4.7.4"
+    }
+}
