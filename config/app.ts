@@ -1,6 +1,6 @@
 import IMiddleWare from '../app/IMiddleWare';
 import GuestUser from '../auth/GuestUser';
-import { IDamiConfig, IDatabase, IPubdirConfig } from './IConfig';
+import { IDamiConfig, IDatabase, IMiddleAction, IPubdirConfig } from './IConfig';
 
 const appConfig: IDamiConfig = {
   appName: "Dami App",
@@ -19,10 +19,10 @@ const appConfig: IDamiConfig = {
   requiredLogin: (): boolean | string[] => {
     return false;
   },
-  beforeAction: (): IMiddleWare[] => {
+  beforeAction: (): IMiddleAction[] => {
     return [];
   },
-  afterAction: (): IMiddleWare[] => {
+  afterAction: (): IMiddleAction[] => {
     return [];
   },
   rbac: (userModel, path): boolean => {

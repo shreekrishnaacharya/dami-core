@@ -4,6 +4,8 @@ enum DamiConfigure {
     LOGIN = "loginUser",
     BASE_URL = "baseUrl",
     BASE_PATH = "basePath",
+    AFTER_REQUEST = "afterRequest",
+    BEFORE_REQUEST = "beforeRequest",
     RESOURCE_PATH = "resourcePath",
     SERVER_RENDER = "serverRender",
     PATH = "path",

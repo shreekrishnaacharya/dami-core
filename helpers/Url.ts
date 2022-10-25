@@ -1,21 +1,38 @@
+import { isEmpty } from '@damijs/hp';
 import Dami from '../app/Dami';
+interface IUrlParamsObject {
+  [key: string]: string
+}
 
+interface IUrlConfig {
+  params?: IUrlParamsObject | (string | number)[]
+  absolute?: boolean,
+  basePath?: boolean
+}
 class Url {
-  static to(path: string, params?: object | (string | number)[], absolute?: boolean): string {
-    let _url = '/' + path;
-    if (Array.isArray(params)) {
-      _url += '/' + params.map((e) => (e === null || e === undefined || e === '' ? 'null' : e)).join('/');
-    } else if (Object.keys(params).length > 0) {
-      _url +=
-        '?' +
-        Object.keys(params)
-          .map((key) => `${key}=${params[key]}`)
-          .join('&');
+  static to(path: string, config: IUrlConfig): string {
+    let _url = '/' + path.replace(/^\//, "");
+    const { params, absolute, basePath } = config;
+    if (!isEmpty(params)) {
+      if (Array.isArray(params)) {
+        _url += '/' + params.map((e) => (e === null || e === undefined || e === '' ? 'null' : e)).join('/');
+      }
+      else if (Object.keys(params).length > 0) {
+        _url +=
+          '?' +
+          Object.keys(params)
+            .map((key) => `${key}=${params[key]}`)
+            .join('&');
+      }
     }
-    if (absolute === true) {
-      _url = Dami.baseUrl + '/' + Dami.basePath + _url;
+    if (basePath === true && !isEmpty(Dami.basePath)) {
+      _url = "/" + Dami.basePath.replace(/^\//, '').replace(/\/$/, "") + _url
     }
-    return encodeURI(_url);
+
+    if (absolute !== false) {
+      _url = Dami.baseUrl.replace(/\/$/, "") + _url;
+    }
+    return _url;
   }
 }
 

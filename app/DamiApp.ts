@@ -15,6 +15,8 @@ import * as _path from 'path';
 import { fileURLToPath } from 'url';
 import Controller from '../controllers/Controller';
 import { IControllerList, IDamiConfig } from '../config/IConfig';
+import DamiConfigure from '../config/ConfigTypes';
+import { isEmpty } from '@damijs/hp';
 
 const __dirname = _path.dirname(fileURLToPath(import.meta.url));
 
@@ -84,10 +86,24 @@ class DamiApp {
       next();
     });
 
+    if (Object.values(Dami.publicDir).length > 0) {
+      if (Dami.publicDir.from != undefined) {
+        app.use(Dami.publicDir.from, express.static(Dami.publicDir.path));
+      }
+      else {
+        app.use(express.static(Dami.publicDir.path));
+      }
+    }
+
     app.use(track.start);
     if (initRun) {
       initRun(app)
     }
+    const beforeRequest = Dami.config[Cattr.BEFORE_REQUEST]
+    if (!isEmpty(beforeRequest)) {
+      app.use(beforeRequest);
+    }
+
     if (this.controllers == null) {
       throw new Error(`Controllers 'controllers' not configured`);
     }
@@ -176,15 +192,42 @@ class DamiApp {
         app.use(`/${Cattr.APP_NAME}`, express.static(__dirname + "/../migration/resource/client"));
       }
     }
-    if (Object.values(Dami.publicDir).length > 0) {
-      if (Dami.publicDir.from != undefined) {
-        app.use(Dami.publicDir.from, express.static(Dami.publicDir.path));
-      } else {
-        app.use((req, res, next) => {
-          
-          express.static(Dami.publicDir.path)(req, res, next)
-        });
-      }
+
+    const afterRequest = Dami.config[Cattr.AFTER_REQUEST]
+    if (!isEmpty(afterRequest)) {
+      app.use(afterRequest);
+    }
+    const sr = Dami.config[DamiConfigure.SERVER_RENDER];
+    if (sr) {
+      app.use(async (req, res, next) => {
+        if (!res.headersSent) {
+          const file = Dami.getCurrentPath() + '/' + sr.page;
+          if (!_fs.existsSync(file)) {
+            return next()
+          }
+          _fs.readFile(file, (err, data) => {
+            let _srdata = data.toString("utf-8")
+            const title = res.title;
+            if (title) {
+              const _ctitle = `<title>${title}</title>`;
+              _srdata = _srdata.replace("{{title}}", _ctitle)
+            }
+            if (!isEmpty(res.meta)) {
+              const _cmeta = res.meta.map(m => {
+                const _m = Object.keys(m).map(a => {
+                  return `${a}="${m[a]}"`
+                }).join(" ")
+                return `<meta ${_m}/>`
+              }).join("\n")
+              _srdata = _srdata.replace("{{meta}}", _cmeta)
+            }
+            res.setHeader("Content-Type", "text/html")
+            res.status(HttpCode.OK).send(_srdata).end()
+          })
+        } else {
+          next()
+        }
+      });
     }
     app.use(track.memory);
     app.use(track.time);

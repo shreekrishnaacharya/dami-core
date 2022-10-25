@@ -1,3 +1,4 @@
+import { NextFunction, Request, Response } from "express";
 import IMiddleWare from "../app/IMiddleWare";
 import IAuth from "../auth/IAuth";
 import IController from "../controllers/IController";
@@ -38,8 +39,12 @@ export interface IRbacFunc {
     (user: IAuth, path: string): boolean;
 }
 
-export interface IActionFunc {
+export interface IMiddleAction {
     (): any[];
+}
+
+export interface IActionFunc {
+    (request: Request, response: Response, next: NextFunction): void;
 }
 
 export interface IRequiredLoginFunc {
@@ -54,7 +59,6 @@ export interface IDamiList {
 export interface IServerRender {
     path: string
     has: boolean
-    middleWare: IMiddleWare
     page: string
 }
 
@@ -74,11 +78,13 @@ export interface IDamiConfig {
     path?: object
     initAction?: Function
     requiredLogin?: IRequiredLoginFunc
-    beforeAction?: IActionFunc
-    afterAction?: IActionFunc
+    beforeAction?: IMiddleAction
+    afterAction?: IMiddleAction
+    beforeRequest?: IActionFunc
+    afterRequest?: IActionFunc
     rbac?: IRbacFunc
     dbConfig?: IDatabase
     enableRbac?: boolean
     services?: Array<any>
-    serverRender?: IServerRender
+    serverRender?: IServerRender | IServerRender[]
 }

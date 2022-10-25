@@ -5,7 +5,7 @@
     "type": "module",
     "main": "index.ts",
     "scripts": {
-        "build": "rm -rf ../publish/core/dist/* && npx tsc && cp -r migration/resource/* ../publish/core/dist/migration/resource/ && cp -r ../publish/core/dist/* ../../voteup/node_modules/@damijs/core/dist/"
+        "build": "rm -rf ../publish/core/dist/* && npx tsc && cp -r migration/resource/* ../publish/core/dist/migration/resource/ && cp -f -r ../publish/core/dist/* ../../voteup/node_modules/@damijs/core/dist/"
     },
     "author": "Shree Krishna Acharya",
     "license": "MIT",
