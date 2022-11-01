@@ -14,7 +14,7 @@ import Cattr from "../config/ConfigTypes"
 import * as _path from 'path';
 import { fileURLToPath } from 'url';
 import Controller from '../controllers/Controller';
-import { IControllerList, IDamiConfig } from '../config/IConfig';
+import { IControllerList, IDamiConfig, IServerRender } from '../config/IConfig';
 import DamiConfigure from '../config/ConfigTypes';
 import { isEmpty } from '@damijs/hp';
 
@@ -197,33 +197,36 @@ class DamiApp {
     if (!isEmpty(afterRequest)) {
       app.use(afterRequest);
     }
+    console.log("helloooo")
     const sr = Dami.config[DamiConfigure.SERVER_RENDER];
+    console.log(sr)
     if (sr) {
       app.use(async (req, res, next) => {
+        console.log("oops", res.headersSent)
         if (!res.headersSent) {
-          const file = Dami.getCurrentPath() + '/' + sr.page;
-          if (!_fs.existsSync(file)) {
-            return next()
+          let currentPage = <IServerRender>{};
+          if (Array.isArray(sr)) {
+            let brk = false;
+            sr.forEach(e => {
+              console.log(e, req.path)
+              if (brk) return false
+              const path = req.path.slice(0, e.path.length)
+              if (path !== e.path) {
+                return false;
+              }
+              currentPage = { ...e }
+              brk = true
+            })
+            if (!brk) return next()
+          } else {
+            currentPage = sr
           }
-          _fs.readFile(file, (err, data) => {
-            let _srdata = data.toString("utf-8")
-            const title = res.title;
-            if (title) {
-              const _ctitle = `<title>${title}</title>`;
-              _srdata = _srdata.replace("{{title}}", _ctitle)
-            }
-            if (!isEmpty(res.meta)) {
-              const _cmeta = res.meta.map(m => {
-                const _m = Object.keys(m).map(a => {
-                  return `${a}="${m[a]}"`
-                }).join(" ")
-                return `<meta ${_m}/>`
-              }).join("\n")
-              _srdata = _srdata.replace("{{meta}}", _cmeta)
-            }
-            res.setHeader("Content-Type", "text/html")
-            res.status(HttpCode.OK).send(_srdata).end()
-          })
+          console.log("helloooo1")
+          if (!this.getServerResponse(req, res, currentPage.page)) {
+            next()
+          }
+          console.log("helloooo2")
+
         } else {
           next()
         }
@@ -235,6 +238,32 @@ class DamiApp {
     app.listen(Dami.port, () => console.log(`Your app listening on port ${Dami.port}!`));
   };
 
+  private getServerResponse(req, res, page) {
+    const file = Dami.getCurrentPath() + '/' + page;
+    if (!_fs.existsSync(file)) {
+      return false
+    }
+    _fs.readFile(file, (err, data) => {
+      let _srdata = data.toString("utf-8")
+      const title = res.title;
+      if (title) {
+        const _ctitle = `<title>${title}</title>`;
+        _srdata = _srdata.replace("{{title}}", _ctitle)
+      }
+      if (!isEmpty(res.meta)) {
+        const _cmeta = res.meta.map(m => {
+          const _m = Object.keys(m).map(a => {
+            return `${a}="${m[a]}"`
+          }).join(" ")
+          return `<meta ${_m}/>`
+        }).join("\n")
+        _srdata = _srdata.replace("{{meta}}", _cmeta)
+      }
+      res.setHeader("Content-Type", "text/html")
+      res.status(HttpCode.OK).send(_srdata).end()
+    })
+    return true
+  }
   private getControllers(controller: object, newController: Array<any> = [], con = '') {
     for (const cont of Object.keys(controller)) {
       if (!(controller[cont] instanceof Controller)) {

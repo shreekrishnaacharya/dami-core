@@ -58,10 +58,8 @@ export interface IDamiList {
 
 export interface IServerRender {
     path: string
-    has: boolean
     page: string
 }
-
 
 export interface IDamiConfig {
     appName: string,

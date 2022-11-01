@@ -1,4 +1,3 @@
-import IMiddleWare from '../app/IMiddleWare';
 import GuestUser from '../auth/GuestUser';
 import { IDamiConfig, IDatabase, IMiddleAction, IPubdirConfig } from './IConfig';
 
