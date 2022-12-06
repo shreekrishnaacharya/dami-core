@@ -197,21 +197,17 @@ class DamiApp {
     if (!isEmpty(afterRequest)) {
       app.use(afterRequest);
     }
-    console.log("helloooo")
     const sr = Dami.config[DamiConfigure.SERVER_RENDER];
-    console.log(sr)
     if (sr) {
       app.use(async (req, res, next) => {
-        console.log("oops", res.headersSent)
         if (!res.headersSent) {
           let currentPage = <IServerRender>{};
           if (Array.isArray(sr)) {
             let brk = false;
             sr.forEach(e => {
-              console.log(e, req.path)
               if (brk) return false
-              const path = req.path.slice(0, e.path.length)
-              if (path !== e.path) {
+              const path = req.path
+              if (!path.startsWith(e.path)) {
                 return false;
               }
               currentPage = { ...e }
@@ -221,12 +217,9 @@ class DamiApp {
           } else {
             currentPage = sr
           }
-          console.log("helloooo1")
           if (!this.getServerResponse(req, res, currentPage.page)) {
             next()
           }
-          console.log("helloooo2")
-
         } else {
           next()
         }
@@ -246,6 +239,7 @@ class DamiApp {
     _fs.readFile(file, (err, data) => {
       let _srdata = data.toString("utf-8")
       const title = res.title;
+      console.log(res.title)
       if (title) {
         const _ctitle = `<title>${title}</title>`;
         _srdata = _srdata.replace("{{title}}", _ctitle)

@@ -1,6 +1,6 @@
 {
     "name": "@damijs/core",
-    "version": "2.3.4",
+    "version": "2.3.5",
     "description": "@damijs/core is a nodejs framework above expressjs. It consist of library and tools that will let you quickly setup your web application writing less code for you so you can focus on your business logic.",
     "type": "module",
     "main": "index.ts",
