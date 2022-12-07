@@ -1,5 +1,5 @@
 import * as mysql from 'mysql';
-import { isEmpty } from '../helpers/functions';
+import { isEmpty } from '@damijs/hp';
 class QueryBuild {
     constructor() {
         /**

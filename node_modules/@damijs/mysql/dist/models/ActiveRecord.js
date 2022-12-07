@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { isEmpty } from '../helpers/functions';
+import { isEmpty } from '@damijs/hp';
 import ListModel from '../helpers/ListModel';
 import ActiveQuery from './ActiveQuery';
 import BaseModel from './BaseModel';

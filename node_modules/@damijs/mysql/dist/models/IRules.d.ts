@@ -32,7 +32,7 @@ interface IAttList {
 interface IAttribute {
     [propName: string]: (SingleRule | IRule | IOneof | IPattern | ILength | IMatch | ICallback | string)[];
 }
-declare type SingleRule = RuleType.STRING | RuleType.NUMBER | RuleType.EMAIL | RuleType.REQUIRED | RuleType.UNIQUE;
+type SingleRule = RuleType.STRING | RuleType.NUMBER | RuleType.EMAIL | RuleType.REQUIRED | RuleType.UNIQUE;
 declare const DataType: RuleType[];
 declare const StringRule: RuleType[];
 declare const ObjectRule: RuleType[];

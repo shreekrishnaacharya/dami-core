@@ -1,6 +1,11 @@
-import { Request, Response } from 'express';
 import IActiveModel from '../models/IActiveModel';
 import QueryBuild from '../models/QueryBuild';
+interface Request {
+    [key: string]: any;
+}
+interface Response {
+    [key: string]: any;
+}
 interface DpConfig {
     request: Request;
     response: Response;

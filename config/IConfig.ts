@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import IMiddleWare from "../app/IMiddleWare";
 import IAuth from "../auth/IAuth";
 import IController from "../controllers/IController";
 

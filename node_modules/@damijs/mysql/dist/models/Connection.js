@@ -48,6 +48,7 @@ class Connection extends BaseModel {
         };
         this.queryString = '';
         this.queryType = '';
+        this.db = new Mysql();
     }
     /**
      * setup query string to be processed
@@ -197,10 +198,6 @@ class Connection extends BaseModel {
      */
     beginTransaction() {
         return __awaiter(this, void 0, void 0, function* () {
-            if (Connection.config === null) {
-                throw Error("Db not configured");
-            }
-            this.db = new Mysql(Connection.config);
             yield this.db.beginTransaction(true);
             return this.db;
         });

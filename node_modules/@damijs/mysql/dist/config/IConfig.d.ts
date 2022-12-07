@@ -4,5 +4,6 @@ export interface IDatabase {
     user: string;
     password: string;
     database: string;
+    port: number;
     dummy?: boolean;
 }
